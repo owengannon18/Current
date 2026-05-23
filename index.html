@@ -100,7 +100,6 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-4">
                 <div class="flex items-center gap-3 w-full sm:w-auto">
                     <button onclick="showView('profile-view')" class="text-xs font-bold bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-400 hover:text-white flex-shrink-0">← Home Profile</button>
-                    
                     <div class="flex items-center gap-2 flex-grow">
                         <div id="artistHeaderTitleWrapper" class="relative group w-full">
                             <input type="text" id="artistPageHeaderTitleInput" class="bg-transparent border-b border-transparent hover:border-purple-500/50 focus:border-purple-500 font-black text-white text-xl px-1 py-0.5 focus:outline-none transition w-full max-w-sm" title="Click to fix typos / edit name">
@@ -113,24 +112,25 @@
                 </div>
             </div>
 
-            <div id="artistGlobalSummaryBox" class="bg-gray-950 border border-gray-900 rounded-xl p-6 flex flex-col md:flex-row gap-8 items-center justify-center max-w-2xl mx-auto">
-                <div class="flex flex-col items-center">
-                    <h5 class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 text-center">Interactive Distribution</h5>
-                    <div class="w-56 h-56 relative flex items-center justify-center">
-                        <canvas id="metricsDistributionPieChart" width="224" height="224" class="max-w-full max-h-full cursor-crosshair"></canvas>
-                    </div>
-                </div>
-                
-                <div class="w-full md:w-64 flex flex-col">
-                    <h5 class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 text-left">Rating Color Matrix Key</h5>
-                    <div class="border border-gray-800 rounded-lg overflow-hidden bg-gray-900/20 text-xs">
-                        <div class="grid grid-cols-3 bg-gray-900/80 p-2 font-bold text-gray-400 border-b border-gray-800 text-[10px] uppercase tracking-wider">
-                            <span>Rating</span>
-                            <span>Label</span>
-                            <span class="text-right">Tracks</span>
+            <div class="max-w-2xl mx-auto bg-gray-950 border border-gray-900 rounded-xl p-6">
+                <h5 class="text-xs font-black uppercase tracking-widest text-center text-purple-400 mb-4 border-b border-gray-900 pb-2">Totals</h5>
+                <div id="artistGlobalSummaryBox" class="flex flex-col md:flex-row gap-8 items-center justify-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-56 h-56 relative flex items-center justify-center">
+                            <canvas id="metricsDistributionPieChart" width="224" height="224" class="max-w-full max-h-full cursor-crosshair"></canvas>
                         </div>
-                        <div id="spreadsheetKeyTableBody" class="divide-y divide-gray-900 max-h-56 overflow-y-auto">
+                    </div>
+                    
+                    <div class="w-full md:w-64 flex flex-col">
+                        <div class="border border-gray-800 rounded-lg overflow-hidden bg-gray-900/20 text-xs">
+                            <div class="grid grid-cols-3 bg-gray-900/80 p-2 font-bold text-gray-400 border-b border-gray-800 text-[10px] uppercase tracking-wider">
+                                <span>Rating</span>
+                                <span>Label</span>
+                                <span class="text-right">Tracks</span>
                             </div>
+                            <div id="spreadsheetKeyTableBody" class="divide-y divide-gray-900 max-h-56 overflow-y-auto">
+                                </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -263,19 +263,19 @@
             }]
         };
 
-        // Calibration data mapping color profiles directly to tracks and matching colors
+        // Calibration data mapping color profiles directly to custom semantic descriptions
         const ratingLabels = [
-            { label: "PURPLE", val: 5.0, hex: "#9333ea", bg: "bg-purple-600 border-purple-400 text-white font-black" },
-            { label: "BLUE", val: 4.5, hex: "#2563eb", bg: "bg-blue-600 border-blue-400 text-white font-bold" },
-            { label: "LIGHT BLUE", val: 4.0, hex: "#0ea5e9", bg: "bg-sky-500 border-sky-300 text-gray-950 font-bold" },
-            { label: "TEAL", val: 3.5, hex: "#10b981", bg: "bg-emerald-500 border-emerald-300 text-gray-950 font-bold" },
-            { label: "GREEN", val: 3.0, hex: "#065f46", bg: "bg-emerald-800 border-emerald-600 text-white font-bold" },
-            { label: "YELLOW GREEN", val: 2.5, hex: "#a3e635", bg: "bg-lime-400 border-lime-300 text-gray-950 font-medium" },
-            { label: "YELLOW", val: 2.0, hex: "#facc15", bg: "bg-yellow-400 border-yellow-300 text-gray-950 font-medium" }, // Original Stable Yellow
-            { label: "YELLOW ORANGE", val: 1.5, hex: "#d97706", bg: "bg-amber-600 border-amber-500 text-white font-medium" }, // Rich Deeper Amber
-            { label: "RED ORANGE", val: 1.0, hex: "#ea580c", bg: "bg-orange-600 border-orange-400 text-white" },
-            { label: "RED", val: 0.5, hex: "#dc2626", bg: "bg-red-600 border-red-400 text-white" },
-            { label: "GREY", val: 0.0, hex: "#475569", bg: "bg-slate-600 border-slate-400 text-slate-100" }
+            { label: "Masterpiece", val: 5.0, hex: "#9333ea", bg: "bg-purple-600 border-purple-400 text-white font-black" },
+            { label: "Amazing", val: 4.5, hex: "#2563eb", bg: "bg-blue-600 border-blue-400 text-white font-bold" },
+            { label: "Great", val: 4.0, hex: "#0ea5e9", bg: "bg-sky-500 border-sky-300 text-gray-950 font-bold" },
+            { label: "Good", val: 3.5, hex: "#10b981", bg: "bg-emerald-500 border-emerald-300 text-gray-950 font-bold" },
+            { label: "Pretty Good", val: 3.0, hex: "#065f46", bg: "bg-emerald-800 border-emerald-600 text-white font-bold" },
+            { label: "Average", val: 2.5, hex: "#a3e635", bg: "bg-lime-400 border-lime-300 text-gray-950 font-medium" },
+            { label: "Ok", val: 2.0, hex: "#facc15", bg: "bg-yellow-400 border-yellow-300 text-gray-950 font-medium" }, 
+            { label: "Bad", val: 1.5, hex: "#d97706", bg: "bg-amber-600 border-amber-500 text-white font-medium" }, 
+            { label: "Very Bad", val: 1.0, hex: "#ea580c", bg: "bg-orange-600 border-orange-400 text-white" },
+            { label: "Terrible", val: 0.5, hex: "#dc2626", bg: "bg-red-600 border-red-400 text-white" },
+            { label: "Atrocious", val: 0.0, hex: "#475569", bg: "bg-slate-600 border-slate-400 text-slate-100" }
         ];
 
         let pieChartSliceAnglesBuffer = [];
@@ -288,6 +288,16 @@
 
         function checkSupabaseConnected() {
             return SUPABASE_URL !== "https://your-project-id.supabase.co" && SUPABASE_KEY !== "your-anon-public-api-key";
+        }
+
+        // RECOVERY ANCHOR: Master sync checker that handles memory allocation safely
+        function grabLocalChronicleData() {
+            if (localStorage.getItem("musicboxd_local_cache")) {
+                try {
+                    return JSON.parse(localStorage.getItem("musicboxd_local_cache"));
+                } catch(e) { return null; }
+            }
+            return null;
         }
 
         async function initApp() {
@@ -346,14 +356,15 @@
                 document.getElementById("profileInstructionText").textContent = `Browsing ${matchedEmail} in Read-Only Mode.`;
             }
 
-            if (supabaseClient) {
+            if (supabaseClient && !isViewingOwnProfile) {
                 let { data } = await supabaseClient.from('music_profiles').select('reviews_cache, favorites_grid').eq('user_id', userId).single();
                 masterStateCache = data ? data.reviews_cache : {};
                 profileFavoritesArray = data && data.favorites_grid ? data.favorites_grid : [null, null, null, null];
             } else {
-                // LOCAL STORAGE LOCAL CHRONICLE SYSTEM INTEGRATION
-                if (isViewingOwnProfile && localStorage.getItem("musicboxd_local_cache")) {
-                    masterStateCache = JSON.parse(localStorage.getItem("musicboxd_local_cache"));
+                // FIXED BUG: Explicitly safeguard local edits during layout routing transitions
+                let memoryStore = grabLocalChronicleData();
+                if (isViewingOwnProfile && memoryStore) {
+                    masterStateCache = memoryStore;
                     profileFavoritesArray = JSON.parse(localStorage.getItem("musicboxd_local_favorites")) || [null, null, null, null];
                 } else {
                     masterStateCache = targetMeta?.cache || defaultSeedData;
@@ -372,46 +383,92 @@
         async function revertToOwnProfile() {
             document.getElementById("communityProfileSelect").value = "";
             document.getElementById("profileViewingBadge").classList.add("hidden");
+            
+            // FIXED BUG: Absolute priority given to local storage validation paths on view reset
+            let memoryStore = grabLocalChronicleData();
+            isViewingOwnProfile = true;
+
             if (currentAuthenticatedUser) {
-                await loadProfileDataByUserId(currentAuthenticatedUser.id);
+                if (supabaseClient) {
+                    let { data } = await supabaseClient.from('music_profiles').select('reviews_cache, favorites_grid').eq('user_id', currentAuthenticatedUser.id).single();
+                    if (data) {
+                        masterStateCache = data.reviews_cache;
+                        profileFavoritesArray = data.favorites_grid || [null, null, null, null];
+                    } else if (memoryStore) {
+                        masterStateCache = memoryStore;
+                        profileFavoritesArray = JSON.parse(localStorage.getItem("musicboxd_local_favorites")) || [null, null, null, null];
+                    } else {
+                        masterStateCache = defaultSeedData;
+                        profileFavoritesArray = [null, null, null, null];
+                    }
+                }
+                document.getElementById("profileDashboardName").textContent = currentAuthenticatedUser.email.split('@')[0] + "'s Archive";
+                document.getElementById("profileInstructionText").textContent = "Your updates are backed up safely online and tracked inside local runtime memory buffers.";
             } else {
-                activeProfileOwnerId = null; 
-                isViewingOwnProfile = true;
-                
-                // Pull from Local Storage data vaults if available
-                if (localStorage.getItem("musicboxd_local_cache")) {
-                    masterStateCache = JSON.parse(localStorage.getItem("musicboxd_local_cache"));
+                if (memoryStore) {
+                    masterStateCache = memoryStore;
                     profileFavoritesArray = JSON.parse(localStorage.getItem("musicboxd_local_favorites")) || [null, null, null, null];
                 } else {
                     masterStateCache = defaultSeedData; 
                     profileFavoritesArray = [null,null,null,null];
                 }
-                
                 document.getElementById("profileDashboardName").textContent = "Music Curator";
                 document.getElementById("profileInstructionText").textContent = "Your ratings data is automatically cached locally to prevent work from being lost during design updates.";
-                selectedBrowsingArtistContext = ""; refreshDropdownListing(); recalculateMetricsStats(); renderFavoritesDisplaySlots(); evaluateUIStateContext(); showView('profile-view');
             }
+            
+            selectedBrowsingArtistContext = ""; 
+            refreshDropdownListing(); 
+            recalculateMetricsStats(); 
+            renderFavoritesDisplaySlots(); 
+            evaluateUIStateContext(); 
+            showView('profile-view');
         }
 
         async function handleAccountAuth(mode) {
             const email = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPassword").value.trim();
             if (!email || !password) return;
+            
+            // FIXED BUG: Retain memory buffers across profile instantiation forks
+            let localCacheBeforeAuth = grabLocalChronicleData() || masterStateCache;
+            let localFavsBeforeAuth = JSON.parse(localStorage.getItem("musicboxd_local_favorites")) || profileFavoritesArray;
+
             if (supabaseClient) {
                 let res = (mode === 'signup') ? await supabaseClient.auth.signUp({ email, password }) : await supabaseClient.auth.signInWithPassword({ email, password });
                 if (res.error) return alert(res.error.message);
-                if (mode === 'signup') await supabaseClient.from('music_profiles').insert({ user_id: res.data.user.id, email: email, reviews_cache: masterStateCache, favorites_grid: profileFavoritesArray });
+                if (mode === 'signup') {
+                    await supabaseClient.from('music_profiles').insert({ 
+                        user_id: res.data.user.id, 
+                        email: email, 
+                        reviews_cache: localCacheBeforeAuth, 
+                        favorites_grid: localFavsBeforeAuth 
+                    });
+                }
                 currentAuthenticatedUser = res.data.user;
             } else {
                 currentAuthenticatedUser = { email: email, id: "sim-uid-" + btoa(email) };
             }
-            await loadCommunityDirectory(); await revertToOwnProfile();
+            
+            // Re-commit back data loops to prevent authorization state loss mutations
+            localStorage.setItem("musicboxd_local_cache", JSON.stringify(localCacheBeforeAuth));
+            localStorage.setItem("musicboxd_local_favorites", JSON.stringify(localFavsBeforeAuth));
+            
+            await loadCommunityDirectory(); 
+            await revertToOwnProfile();
         }
 
-        function handleSignOut() { if (supabaseClient) supabaseClient.auth.signOut(); currentAuthenticatedUser = null; revertToOwnProfile(); }
+        function handleSignOut() { 
+            // FIXED BUG: Save progress safely to local disk array right before authentication destruction
+            localStorage.setItem("musicboxd_local_cache", JSON.stringify(masterStateCache));
+            localStorage.setItem("musicboxd_local_favorites", JSON.stringify(profileFavoritesArray));
+            
+            if (supabaseClient) supabaseClient.auth.signOut(); 
+            currentAuthenticatedUser = null; 
+            revertToOwnProfile(); 
+        }
 
         function evaluateUIStateContext() {
-            const canModify = currentAuthenticatedUser || isViewingOwnProfile; // Local structural edits permitted inside fallback mode
+            const canModify = currentAuthenticatedUser || isViewingOwnProfile; 
             document.getElementById(currentAuthenticatedUser ? "loggedOutState" : "loggedInState").classList.add("hidden");
             document.getElementById(currentAuthenticatedUser ? "loggedInState" : "loggedOutState").classList.remove("hidden");
             if (currentAuthenticatedUser) document.getElementById("userEmailBadge").textContent = currentAuthenticatedUser.email;
@@ -422,7 +479,6 @@
         }
 
         async function saveState() {
-            // ALWAYS preserve modifications safely in local storage fallback logs
             if (isViewingOwnProfile) {
                 localStorage.setItem("musicboxd_local_cache", JSON.stringify(masterStateCache));
                 localStorage.setItem("musicboxd_local_favorites", JSON.stringify(profileFavoritesArray));
@@ -697,27 +753,24 @@
             const tallyData = {}; ratingLabels.forEach(l => tallyData[l.val] = 0);
             let totalTracksScoreCount = 0;
 
-            // Gather precise track score counts
             albums.forEach(alb => { 
                 alb.tracks.forEach(t => { 
-                    // Round to nearest 0.5 step safely to map onto matrix boundaries
                     const standardizedRating = Math.round(t.rating * 2) / 2;
                     if(tallyData[standardizedRating] !== undefined) { tallyData[standardizedRating]++; totalTracksScoreCount++; } 
                 }); 
             });
 
-            // Update Side Spreadsheet Matrix Legend Table
+            // FIXED TEXT FIELDS: Injects requested semantic grades directly inside the label cell columns
             const legendBody = document.getElementById("spreadsheetKeyTableBody");
             if (legendBody) {
                 legendBody.innerHTML = "";
                 ratingLabels.forEach((l, index) => {
                     const rowCount = tallyData[l.val] || 0;
                     const row = document.createElement("div");
-                    // Highlight the target row if the pie slice is hovered
                     row.className = `grid grid-cols-3 p-2 border-b border-gray-900/60 items-center transition duration-150 ${highlightIndex === index ? 'bg-gray-800 text-white font-bold' : 'text-gray-400'}`;
                     row.innerHTML = `
                         <span class="font-mono text-[11px] px-1.5 py-0.5 rounded ${l.bg} w-max">${l.val.toFixed(1)}</span>
-                        <span class="text-[10px] tracking-wide text-gray-400">${l.label}</span>
+                        <span class="text-[10px] tracking-wide text-gray-400 truncate pr-1">${l.label}</span>
                         <span class="text-right font-mono font-bold text-gray-300">${rowCount}</span>
                     `;
                     legendBody.appendChild(row);
@@ -731,7 +784,7 @@
             }
 
             let startAngle = -Math.PI / 2;
-            pieChartSliceAnglesBuffer = []; // Wipe and rebuild tracking boundary registers
+            pieChartSliceAnglesBuffer = []; 
 
             ratingLabels.forEach((l, index) => {
                 const sliceCount = tallyData[l.val] || 0;
@@ -740,14 +793,13 @@
                 const slicePercentage = sliceCount / totalTracksScoreCount;
                 const endAngle = startAngle + (slicePercentage * 2 * Math.PI);
 
-                // Save coordinate data boundaries for precise canvas mapping calculations
                 pieChartSliceAnglesBuffer.push({ start: startAngle, end: endAngle, label: l.label, val: l.val, count: sliceCount, ratingLabelIndex: index });
 
                 ctx.beginPath();
                 ctx.moveTo(112, 112);
                 ctx.arc(112, 112, (highlightIndex === index) ? 106 : 100, startAngle, endAngle);
                 ctx.closePath();
-                ctx.fillStyle = l.hex; // Perfect color matching with tracks color definitions
+                ctx.fillStyle = l.hex; 
                 ctx.fill();
 
                 ctx.lineWidth = 1.5;
@@ -757,10 +809,8 @@
                 startAngle = endAngle;
             });
 
-            // Center Ring Punch
             ctx.beginPath(); ctx.arc(112, 112, 38, 0, 2 * Math.PI); ctx.fillStyle = "#090d16"; ctx.fill();
 
-            // Overlay spreadsheet floating micro tooltips if item is actively targeted by mouse position 
             if (highlightIndex !== null) {
                 const slice = pieChartSliceAnglesBuffer.find(s => s.ratingLabelIndex === highlightIndex);
                 if (slice) {
@@ -793,7 +843,7 @@
                 }
 
                 let angle = Math.atan2(y, x);
-                if (angle < -Math.PI / 2) { angle += 2 * Math.PI; } // Normalize orientation alignment registers
+                if (angle < -Math.PI / 2) { angle += 2 * Math.PI; } 
 
                 let targetedIndex = null;
                 for (let i = 0; i < pieChartSliceAnglesBuffer.length; i++) {
