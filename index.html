@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MusicBoxd — Live Community & Spotify Edition</title>
+    <title>MusicBoxd — High Contrast Community Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #0c0f14; color: #9ab; font-family: system-ui, sans-serif; }
+        body { background-color: #080a0f; color: #a0aec0; font-family: system-ui, sans-serif; }
         .text-white-important { color: #ffffff !important; }
         .app-view { display: none; }
         .app-view.active { display: block; }
-        .modal-overlay { background-color: rgba(0, 0, 0, 0.85); display: none; }
+        .modal-overlay { background-color: rgba(0, 0, 0, 0.9); display: none; }
         .modal-overlay.active { display: flex; }
     </style>
 </head>
-<body class="p-4 md:p-8 selection:bg-purple-500 selection:text-white">
+<body class="p-4 md:p-8 selection:bg-purple-600 selection:text-white">
 
     <div class="max-w-6xl mx-auto">
         <nav class="flex flex-col md:flex-row items-center justify-between border-b border-gray-800 pb-6 mb-8 gap-4">
             <div class="flex items-center gap-3 cursor-pointer" onclick="revertToOwnProfile()">
-                <div class="bg-gradient-to-tr from-purple-500 to-indigo-500 w-8 h-8 rounded-full flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">M</div>
+                <div class="bg-gradient-to-tr from-purple-600 to-indigo-600 w-8 h-8 rounded-full flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">M</div>
                 <span class="text-white font-bold tracking-wider text-sm uppercase">MusicBoxd</span>
             </div>
             
@@ -50,7 +50,7 @@
 
         <div id="profile-view" class="app-view active space-y-10">
             <section class="flex flex-col md:flex-row gap-6 items-center border-b border-gray-900 pb-10">
-                <div id="profileAvatar" class="w-24 h-24 bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 rounded-full border-2 border-gray-800 flex-shrink-0 shadow-xl"></div>
+                <div id="profileAvatar" class="w-24 h-24 bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-500 rounded-full border-2 border-gray-800 flex-shrink-0 shadow-xl"></div>
                 <div class="text-center md:text-left flex-grow">
                     <div class="flex flex-col sm:flex-row items-center gap-2 justify-center md:justify-start">
                         <h2 class="text-3xl font-black text-white tracking-tight" id="profileDashboardName">Music Curator</h2>
@@ -98,7 +98,7 @@
                     <h2 class="text-xl font-black text-white" id="artistPageHeaderTitle">Artist Workspace</h2>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button id="deleteArtistBtnAction" onclick="deleteEntireArtistContext()" class="hidden bg-red-950/60 border border-red-900 text-red-400 hover:bg-red-900 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition">⚠️ Delete Artist Profile</button>
+                    <button id="deleteArtistBtnAction" onclick="deleteEntireArtistContext()" class="hidden bg-red-950 border border-red-800 text-red-400 hover:bg-red-700 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition">⚠️ Delete Artist Profile</button>
                     <button id="addAlbumButtonAction" onclick="openModal('albumModal')" class="hidden bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add New Album</button>
                 </div>
             </div>
@@ -128,7 +128,7 @@
     </div>
 
     <div id="albumModal" class="modal-overlay fixed inset-0 z-50 items-center justify-center p-4">
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl custom-scrollbar">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-gray-800 pb-2">
                 <h3 class="text-lg font-bold text-white">Create Album Record Entry</h3>
                 <button onclick="closeModal('albumModal')" class="text-gray-400 hover:text-white text-sm">✕</button>
@@ -199,44 +199,44 @@
                 albumName: "the record", 
                 artist: "boygenius", 
                 year: "2023", 
-                officialRating: 3.0,
+                officialRating: 0.0,
                 artworkUrl: "https://i.scdn.co/image/ab67616d0000b273105a16dfab1ec693ec9f15fb",
                 tracks: [
-                    { num: 1, title: "Without You Without Them", rating: 3.0 },
-                    { num: 2, title: "$20", rating: 4.0 },
-                    { num: 3, title: "Emily I'm Sorry", rating: 2.5 },
-                    { num: 4, title: "True Blue", rating: 3.5 },
-                    { num: 5, title: "Cool About It", rating: 4.0 },
-                    { num: 6, title: "Not Strong Enough", rating: 2.5 },
-                    { num: 7, title: "Revolution 0", rating: 2.0 },
-                    { num: 8, title: "Leonard Cohen", rating: 2.0 },
-                    { num: 9, title: "Satanist", rating: 4.0 },
-                    { num: 10, title: "We're In Love", rating: 2.5 },
-                    { num: 11, title: "Anti-Curse", rating: 2.5 },
-                    { num: 12, title: "Letter To An Old Poet", rating: 2.5 }
+                    { num: 1, title: "Without You Without Them", rating: 0.0 },
+                    { num: 2, title: "$20", rating: 0.0 },
+                    { num: 3, title: "Emily I'm Sorry", rating: 0.0 },
+                    { num: 4, title: "True Blue", rating: 0.0 },
+                    { num: 5, title: "Cool About It", rating: 0.0 },
+                    { num: 6, title: "Not Strong Enough", rating: 0.0 },
+                    { num: 7, title: "Revolution 0", rating: 0.0 },
+                    { num: 8, title: "Leonard Cohen", rating: 0.0 },
+                    { num: 9, title: "Satanist", rating: 0.0 },
+                    { num: 10, title: "We're In Love", rating: 0.0 },
+                    { num: 11, title: "Anti-Curse", rating: 0.0 },
+                    { num: 12, title: "Letter To An Old Poet", rating: 0.0 }
                 ]
             }]
         };
 
-        // Your exact requested spreadsheet color-coding key metrics
+        // Your requested high contrast vibrant neon spreadsheet color metrics
         const ratingLabels = [
-            { label: "PURPLE", val: 5.0, bg: "bg-purple-950 border-purple-500 text-purple-300" },
-            { label: "BLUE", val: 4.5, bg: "bg-blue-950 border-blue-500 text-blue-300" },
-            { label: "LIGHT BLUE", val: 4.0, bg: "bg-sky-950 border-sky-400 text-sky-300" },
-            { label: "TEAL", val: 3.5, bg: "bg-teal-950 border-teal-500 text-teal-300" },
-            { label: "GREEN", val: 3.0, bg: "bg-green-950 border-green-500 text-green-300" },
-            { label: "YELLOW GREEN", val: 2.5, bg: "bg-lime-950 border-lime-500 text-lime-300" },
-            { label: "YELLOW", val: 2.0, bg: "bg-yellow-950 border-yellow-500 text-yellow-300" },
-            { label: "YELLOW ORANGE", val: 1.5, bg: "bg-amber-950 border-amber-500 text-amber-300" },
-            { label: "RED ORANGE", val: 1.0, bg: "bg-orange-950 border-orange-500 text-orange-300" },
-            { label: "RED", val: 0.5, bg: "bg-red-950 border-red-500 text-red-300" },
-            { label: "GREY", val: 0.0, bg: "bg-gray-900 border-gray-700 text-gray-400" }
+            { label: "PURPLE", val: 5.0, bg: "bg-purple-600 border-purple-400 text-white font-black shadow-[0_0_12px_rgba(147,51,234,0.4)]" },
+            { label: "BLUE", val: 4.5, bg: "bg-blue-600 border-blue-400 text-white font-bold" },
+            { label: "LIGHT BLUE", val: 4.0, bg: "bg-sky-500 border-sky-300 text-gray-950 font-bold" },
+            { label: "TEAL", val: 3.5, bg: "bg-teal-500 border-teal-300 text-gray-950 font-bold" },
+            { label: "GREEN", val: 3.0, bg: "bg-emerald-500 border-emerald-300 text-gray-950 font-bold" },
+            { label: "YELLOW GREEN", val: 2.5, bg: "bg-lime-400 border-lime-300 text-gray-950 font-medium" },
+            { label: "YELLOW", val: 2.0, bg: "bg-yellow-400 border-yellow-200 text-gray-950 font-medium" },
+            { label: "YELLOW ORANGE", val: 1.5, bg: "bg-amber-500 border-amber-300 text-white font-medium" },
+            { label: "RED ORANGE", val: 1.0, bg: "bg-orange-600 border-orange-400 text-white" },
+            { label: "RED", val: 0.5, bg: "bg-red-600 border-red-400 text-white" },
+            { label: "GREY", val: 0.0, bg: "bg-slate-700 border-slate-500 text-slate-200" }
         ];
 
         function getStyleClassForScore(score) {
             const parsed = parseFloat(score);
             const match = ratingLabels.find(l => parsed >= l.val);
-            return match ? match.bg : "bg-gray-900 border-gray-800 text-gray-400";
+            return match ? match.bg : "bg-gray-800 border-gray-700 text-gray-400";
         }
 
         function checkSupabaseConnected() {
@@ -344,7 +344,7 @@
             if (currentAuthenticatedUser) document.getElementById("userEmailBadge").textContent = currentAuthenticatedUser.email;
             document.getElementById("navAddArtistBtn").className = canModify ? "bg-purple-600 text-white font-bold px-3 py-1 rounded hover:bg-purple-500 transition" : "hidden";
             document.getElementById("addAlbumButtonAction").className = canModify ? "bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition" : "hidden";
-            document.getElementById("deleteArtistBtnAction").className = canModify ? "bg-red-950/60 border border-red-900 text-red-400 hover:bg-red-900 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition" : "hidden";
+            document.getElementById("deleteArtistBtnAction").className = canModify ? "bg-red-950 border border-red-800 text-red-400 hover:bg-red-700 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition" : "hidden";
         }
 
         async function saveState() {
@@ -354,7 +354,7 @@
             buildGlobalArtistHistogram(selectedBrowsingArtistContext);
         }
 
-        // --- SPOTIFY RADAR CONNECTIVITY METHODS ---
+        // --- SPOTIFY RADAR SECURITY MECHANISMS ---
         function generateRandomString(l) { let p = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; let v = crypto.getRandomValues(new Uint8Array(l)); return Array.from(v, x => p[x % p.length]).join(''); }
         async function sha256(plain) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode(plain)); }
         function base64urlencode(a) { return btoa(String.fromCharCode.apply(null, new Uint8Array(a))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -413,7 +413,25 @@
             } catch (err) { alert(err.message); }
         }
 
-        // --- CORE STATE EDITING ENGINES ---
+        // --- MANAGE ORDER REARRANGEMENTS ---
+        function moveAlbumInSequence(albumId, direction) {
+            if (!isViewingOwnProfile || !selectedBrowsingArtistContext) return;
+            const targetList = masterStateCache[selectedBrowsingArtistContext] || [];
+            const idx = targetList.findIndex(a => a.id === albumId);
+            if (idx === -1) return;
+            
+            const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+            if (targetIdx < 0 || targetIdx >= targetList.length) return; // Out of bounds security block
+            
+            // Swap places instantly inside reference layout pointer array
+            const temp = targetList[idx];
+            targetList[idx] = targetList[targetIdx];
+            targetList[targetIdx] = temp;
+            
+            saveState();
+            renderArtistReviewPage(selectedBrowsingArtistContext);
+        }
+
         function submitNewArtist() {
             const name = document.getElementById("newArtistNameInput").value.trim(); if (!name || !isViewingOwnProfile) return;
             if (!masterStateCache[name]) { masterStateCache[name] = []; saveState(); refreshDropdownListing(); }
@@ -431,7 +449,6 @@
             if (!title || !year) return alert("Required fields missing.");
 
             const trackArray = []; let idx = 1;
-            // Default track score set to 0.0 upon initial ingest sequencer allocation
             tracksText.forEach(t => { if(t.trim()) { trackArray.push({ num: idx++, title: t.trim(), rating: 0.0 }); } });
 
             masterStateCache[selectedBrowsingArtistContext].push({ id: "alb-" + Date.now(), albumName: title, artist: selectedBrowsingArtistContext, year: year, officialRating: rating, artworkUrl: artwork, tracks: trackArray });
@@ -439,17 +456,22 @@
             document.getElementById("newAlbumTitle").value = ""; document.getElementById("newAlbumYear").value = ""; document.getElementById("newAlbumTracksList").value = ""; document.getElementById("newAlbumArtworkUrl").value = ""; temporaryArtworkUrlBuffer = "";
         }
 
-        // Inline metadata hot updates
         function updateAlbumInlineMetadata(albumId, field, value) {
             if (!isViewingOwnProfile) return;
             const alb = masterStateCache[selectedBrowsingArtistContext].find(a => a.id === albumId);
             if (alb) {
-                if (field === 'rating') alb.officialRating = parseFloat(value || 0.0);
-                else alb[field] = value;
+                if (field === 'rating') {
+                    const parsedVal = parseFloat(value || 0.0);
+                    alb.officialRating = parsedVal;
+                    // Force complete theme color alignment synchronization instantly across metrics
+                    const newClass = `flex items-center gap-2 border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(parsedVal)}`;
+                    document.getElementById(`deckavgwrap-${albumId}`).className = newClass;
+                } else {
+                    alb[field] = value;
+                }
                 saveState();
                 if (field === 'artworkUrl') {
-                    const img = document.getElementById(`img-cover-${albumId}`);
-                    if(img) img.src = value;
+                    const img = document.getElementById(`img-cover-${albumId}`); if(img) img.src = value;
                 }
             }
         }
@@ -473,28 +495,20 @@
                 
                 const avgVal = (alb.tracks.reduce((s, t) => s + t.rating, 0) / alb.tracks.length);
                 document.getElementById(`avg-${albumId}`).textContent = avgVal.toFixed(4);
-                
-                // Sync classes for rows and macro-summary boxes instantly
                 document.getElementById(`rowwrap-${albumId}-${trackNum}`).className = `flex items-center justify-between p-2 rounded-lg border transition ${getStyleClassForScore(numVal)}`;
-                document.getElementById(`deckavgwrap-${albumId}`).className = `flex items-center gap-2 border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(avgVal)}`;
             }
         }
 
-        // Destruction operational hooks
         function deleteAlbumFromContext(albumId) {
             if (!isViewingOwnProfile || !confirm("Are you sure you want to completely delete this album?")) return;
             masterStateCache[selectedBrowsingArtistContext] = masterStateCache[selectedBrowsingArtistContext].filter(a => a.id !== albumId);
-            saveState();
-            renderArtistReviewPage(selectedBrowsingArtistContext);
+            saveState(); renderArtistReviewPage(selectedBrowsingArtistContext);
         }
 
         function deleteEntireArtistContext() {
-            if (!isViewingOwnProfile || !confirm(`⚠️ CRITICAL WARNING: Are you sure you want to entirely delete ${selectedBrowsingArtistContext} and all corresponding records from your profile? This cannot be undone.`)) return;
+            if (!isViewingOwnProfile || !confirm(`⚠️ CRITICAL WARNING: Are you sure you want to entirely delete ${selectedBrowsingArtistContext}? This cannot be undone.`)) return;
             delete masterStateCache[selectedBrowsingArtistContext];
-            selectedBrowsingArtistContext = "";
-            saveState();
-            refreshDropdownListing();
-            revertToOwnProfile();
+            selectedBrowsingArtistContext = ""; saveState(); refreshDropdownListing(); revertToOwnProfile();
         }
 
         // --- ARTIST LEVEL CONSOLIDATED ACCUMULATOR ---
@@ -510,11 +524,13 @@
                 const count = globalTally[l.val] || 0;
                 const card = document.createElement("div");
                 if (count > 0) {
-                    card.className = `p-2 rounded-lg border flex flex-col items-center justify-center font-bold ${l.bg}`;
+                    card.className = `p-2 rounded-lg border flex flex-col items-center justify-center font-bold text-center ${l.bg}`;
                 } else {
-                    card.className = "p-2 rounded-lg border border-gray-900 bg-gray-950/40 text-gray-700 flex flex-col items-center justify-center";
+                    card.className = "p-2 rounded-lg border border-gray-900 bg-gray-950/45 text-gray-600 flex flex-col items-center justify-center text-center";
                 }
-                card.innerHTML = `<span class="text-[8px] uppercase tracking-tighter opacity-80 text-center truncate w-full">${l.label}</span><span class="text-sm font-black mt-0.5">${l.val.toFixed(1)}</span><span class="text-[10px] bg-black/40 px-1.5 py-0.5 rounded mt-1 font-mono text-white">${count}</span>`;
+                // Text color protection override helper for bright light-blue/yellow nodes
+                const textContrastStyle = (l.val === 4.0 || l.val === 3.5 || l.val === 3.0 || l.val === 2.5 || l.val === 2.0) && count > 0 ? 'text-gray-950 font-black' : 'text-white opacity-90';
+                card.innerHTML = `<span class="text-[8px] uppercase tracking-tighter truncate w-full block">${l.label}</span><span class="text-sm font-black mt-0.5">${l.val.toFixed(1)}</span><span class="text-[10px] bg-black/50 px-1.5 py-0.5 rounded mt-1 font-mono ${textContrastStyle}">${count}</span>`;
                 grid.appendChild(card);
             });
         }
@@ -542,13 +558,12 @@
             if (albums.length === 0) {
                 container.innerHTML = `<p class="text-sm text-gray-500 py-12 text-center">No albums logged for this artist yet.</p>`; return;
             }
-            albums.forEach(album => {
+            albums.forEach((album, index) => {
                 const totalTracksCount = album.tracks.length;
                 const trackAvg = album.tracks.reduce((s, t) => s + t.rating, 0) / (totalTracksCount || 1);
                 const section = document.createElement("div");
                 section.className = "bg-gray-950 border border-gray-900 rounded-xl p-6 shadow-2xl space-y-6";
                 
-                // Formulate content container blocks with operational edit capabilities attached
                 section.innerHTML = `
                     <div class="grid grid-cols-1 lg:grid-cols-12 border-b border-gray-900 pb-4 gap-4 items-center">
                         <div class="lg:col-span-5 flex flex-col gap-1">
@@ -563,11 +578,14 @@
                                 <input type="number" value="${album.year}" onchange="updateAlbumInlineMetadata('${album.id}', 'year', this.value)" class="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-sm font-mono text-gray-300 font-bold w-full focus:outline-none focus:border-purple-500">
                             ` : `<span class="text-gray-300 text-sm font-mono">[${album.year}]</span>`}
                         </div>
-                        <div class="lg:col-span-4 flex items-center justify-end gap-3 pt-4 lg:pt-0">
+                        <div class="lg:col-span-4 flex items-center justify-end gap-2 pt-4 lg:pt-0">
                             ${isViewingOwnProfile ? `
-                                <button onclick="deleteAlbumFromContext('${album.id}')" class="bg-red-950/40 border border-red-900/60 text-red-400 hover:bg-red-900 hover:text-white px-2.5 py-1 rounded text-xs font-bold transition">🗑️ Delete Album</button>
+                                <div class="flex items-center gap-1 mr-2 bg-gray-900 border border-gray-800 p-1 rounded-lg">
+                                    <button onclick="moveAlbumInSequence('${album.id}', 'up')" class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-1 rounded text-xs transition px-2" title="Move Up">🔼</button>
+                                    <button onclick="moveAlbumInSequence('${album.id}', 'down')" class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-1 rounded text-xs transition px-2" title="Move Down">🔽</button>
+                                </div>
+                                <button onclick="deleteAlbumFromContext('${album.id}')" class="bg-red-950 border border-red-900 text-red-400 hover:bg-red-600 hover:text-white px-2.5 py-1 rounded text-xs font-bold transition">🗑️ Delete</button>
                             ` : ''}
-                            <span class="text-[10px] uppercase font-black tracking-widest px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded">ARCHIVE ID</span>
                         </div>
                     </div>
                     
@@ -581,14 +599,14 @@
                                 ${album.tracks.map(t => `
                                     <div id="rowwrap-${album.id}-${t.num}" class="flex items-center justify-between p-2 rounded-lg border transition ${getStyleClassForScore(t.rating)}">
                                         <div class="flex items-center gap-3 truncate flex-grow mr-2">
-                                            <span class="font-mono text-xs opacity-60 w-4">${t.num}</span>
+                                            <span class="font-mono text-xs opacity-80 w-4">${t.num}</span>
                                             ${isViewingOwnProfile ? `
-                                                <input type="text" value="${t.title}" onchange="updateTrackNameInline('${album.id}', ${t.num}, this.value)" class="bg-transparent border-b border-transparent hover:border-white/10 focus:border-white focus:outline-none text-xs font-medium tracking-wide text-white flex-grow py-0.5">
+                                                <input type="text" value="${t.title}" onchange="updateTrackNameInline('${album.id}', ${t.num}, this.value)" class="bg-transparent border-b border-transparent hover:border-white/20 focus:border-white focus:outline-none text-xs font-bold tracking-wide text-white flex-grow py-0.5">
                                             ` : `<span class="font-semibold text-xs tracking-wide truncate text-white-important">${t.title}</span>`}
                                         </div>
                                         <div class="flex items-center flex-shrink-0">
                                             ${isViewingOwnProfile ? `
-                                                <input type="number" step="0.5" min="0" max="5" value="${t.rating}" oninput="updateSongScore('${artistName}', '${album.id}', ${t.num}, this.value)" class="w-14 bg-black/40 border border-white/10 rounded font-mono text-center text-xs px-1 py-0.5 font-bold focus:outline-none focus:border-white">
+                                                <input type="number" step="0.5" min="0" max="5" value="${t.rating}" oninput="updateSongScore('${artistName}', '${album.id}', ${t.num}, this.value)" class="w-14 bg-black/40 border border-white/20 rounded font-mono text-center text-xs px-1 py-0.5 font-bold text-white focus:outline-none focus:border-white">
                                             ` : `
                                                 <span class="font-mono font-black px-2 text-xs">${t.rating.toFixed(1)}</span>
                                             `}
@@ -598,14 +616,14 @@
                             </div>
                             
                             <div class="grid grid-cols-2 gap-3 border-t border-gray-900 pt-4">
-                                <div id="deckavgwrap-${album.id}" class="flex items-center gap-2 border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(trackAvg)}">
-                                    <span class="text-[9px] uppercase font-black tracking-wider opacity-80">TRACK AVG:</span>
+                                <div id="deckavgwrap-${album.id}" class="flex items-center gap-2 border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(album.officialRating)}">
+                                    <span class="text-[9px] uppercase font-black tracking-wider opacity-90">TRACK AVG:</span>
                                     <span class="text-sm font-mono font-black" id="avg-${album.id}">${trackAvg.toFixed(4)}</span>
                                 </div>
                                 <div id="deckoverallwrap-${album.id}" class="flex items-center justify-between border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(album.officialRating)}">
-                                    <span class="text-[9px] uppercase font-black tracking-wider opacity-80">OVERALL:</span>
+                                    <span class="text-[9px] uppercase font-black tracking-wider opacity-90">OVERALL:</span>
                                     ${isViewingOwnProfile ? `
-                                        <input type="number" step="0.1" min="0" max="5" value="${album.officialRating}" oninput="updateAlbumInlineMetadata('${album.id}', 'rating', this.value); this.parentElement.className='flex items-center justify-between border px-3 py-1.5 rounded-lg transition ' + getStyleClassForScore(this.value);" class="w-14 bg-black/30 border border-white/10 rounded font-mono text-center font-black text-xs focus:outline-none focus:border-white">
+                                        <input type="number" step="0.1" min="0" max="5" value="${album.officialRating}" oninput="updateAlbumInlineMetadata('${album.id}', 'rating', this.value); this.parentElement.className='flex items-center justify-between border px-3 py-1.5 rounded-lg transition ' + getStyleClassForScore(this.value);" class="w-14 bg-black/30 border border-white/20 rounded font-mono text-center font-black text-xs focus:outline-none focus:border-white">
                                     ` : `
                                         <span class="text-sm font-mono font-black">${album.officialRating.toFixed(1)}</span>
                                     `}
@@ -615,14 +633,14 @@
                         
                         <div class="md:col-span-5 flex flex-col bg-gray-900/20 border border-gray-900 rounded-xl p-4 space-y-3">
                             <div class="w-full aspect-square rounded-lg overflow-hidden bg-gray-950 border border-gray-800 flex items-center justify-center shadow-inner">
-                                <img id="img-cover-${album.id}" src="${album.artworkUrl || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'}" alt="${album.albumName}" class="w-full h-full object-cover shadow-2xl transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'">
+                                <img id="img-cover-${album.id}" src="${album.artworkUrl || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'}" alt="${album.albumName}" class="w-full h-full object-cover shadow-2xl" onerror="this.src='https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'">
                             </div>
                             ${isViewingOwnProfile ? `
                                 <div class="flex flex-col gap-1 w-full">
                                     <span class="text-[8px] font-mono tracking-widest text-gray-500 uppercase">Artwork Asset URL Link</span>
                                     <input type="text" value="${album.artworkUrl || ''}" placeholder="Paste image link..." onchange="updateAlbumInlineMetadata('${album.id}', 'artworkUrl', this.value)" class="bg-gray-900 border border-gray-850 rounded px-2 py-1 text-[10px] text-gray-400 font-mono focus:outline-none w-full">
                                 </div>
-                            ` : '<span class="text-[9px] font-mono tracking-widest text-gray-600 uppercase text-center">Spotify Digital Source Link</span>'}
+                            ` : '<span class="text-[9px] font-mono tracking-widest text-gray-600 uppercase text-center">Spotify Source Media Link</span>'}
                         </div>
                     </div>
                 `;
