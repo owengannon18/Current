@@ -56,7 +56,7 @@
                         <h2 class="text-3xl font-black text-white tracking-tight" id="profileDashboardName">Music Curator</h2>
                         <span id="profileViewingBadge" class="hidden text-[10px] uppercase font-black tracking-widest px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">Viewing Community Member</span>
                     </div>
-                    <p class="text-sm text-gray-500 mt-1" id="profileInstructionText">Log in to build an account, auto-import titles from Spotify, and publish your ratings grid online.</p>
+                    <p class="text-sm text-gray-500 mt-1" id="profileInstructionText">Your ratings data is automatically cached locally to prevent work from being lost during design updates.</p>
                     <div class="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
                         <button onclick="showView('yearly-view')" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 text-gray-300 text-xs font-bold px-4 py-2 rounded-md transition">🏆 Yearly Favorites</button>
                         <button onclick="showView('top100-view')" class="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 text-gray-300 text-xs font-bold px-4 py-2 rounded-md transition">🥇 Top 100 Albums</button>
@@ -113,10 +113,25 @@
                 </div>
             </div>
 
-            <div id="artistGlobalSummaryBox" class="bg-gray-950 border border-gray-900 rounded-xl p-6 flex flex-col items-center justify-center max-w-md mx-auto">
-                <h5 class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 text-center">Data Key Distribution Pie Chart</h5>
-                <div class="w-64 h-64 relative flex items-center justify-center">
-                    <canvas id="metricsDistributionPieChart" width="256" height="256" class="max-w-full max-h-full cursor-crosshair"></canvas>
+            <div id="artistGlobalSummaryBox" class="bg-gray-950 border border-gray-900 rounded-xl p-6 flex flex-col md:flex-row gap-8 items-center justify-center max-w-2xl mx-auto">
+                <div class="flex flex-col items-center">
+                    <h5 class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 text-center">Interactive Distribution</h5>
+                    <div class="w-56 h-56 relative flex items-center justify-center">
+                        <canvas id="metricsDistributionPieChart" width="224" height="224" class="max-w-full max-h-full cursor-crosshair"></canvas>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-64 flex flex-col">
+                    <h5 class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 text-left">Rating Color Matrix Key</h5>
+                    <div class="border border-gray-800 rounded-lg overflow-hidden bg-gray-900/20 text-xs">
+                        <div class="grid grid-cols-3 bg-gray-900/80 p-2 font-bold text-gray-400 border-b border-gray-800 text-[10px] uppercase tracking-wider">
+                            <span>Rating</span>
+                            <span>Label</span>
+                            <span class="text-right">Tracks</span>
+                        </div>
+                        <div id="spreadsheetKeyTableBody" class="divide-y divide-gray-900 max-h-56 overflow-y-auto">
+                            </div>
+                    </div>
                 </div>
             </div>
 
@@ -221,7 +236,7 @@
         let temporaryArtworkUrlBuffer = "";
         
         let targetedFavSlotIndex = null;
-        let profileFavoritesArray = [null, null, null, null]; // Holds metadata pointers
+        let profileFavoritesArray = [null, null, null, null]; 
 
         const defaultSeedData = {
             "boygenius": [{
@@ -248,7 +263,7 @@
             }]
         };
 
-        // Calibration updates mapping directly to requested adjustments
+        // Calibration data mapping color profiles directly to tracks and matching colors
         const ratingLabels = [
             { label: "PURPLE", val: 5.0, hex: "#9333ea", bg: "bg-purple-600 border-purple-400 text-white font-black" },
             { label: "BLUE", val: 4.5, hex: "#2563eb", bg: "bg-blue-600 border-blue-400 text-white font-bold" },
@@ -256,8 +271,8 @@
             { label: "TEAL", val: 3.5, hex: "#10b981", bg: "bg-emerald-500 border-emerald-300 text-gray-950 font-bold" },
             { label: "GREEN", val: 3.0, hex: "#065f46", bg: "bg-emerald-800 border-emerald-600 text-white font-bold" },
             { label: "YELLOW GREEN", val: 2.5, hex: "#a3e635", bg: "bg-lime-400 border-lime-300 text-gray-950 font-medium" },
-            { label: "YELLOW", val: 2.0, hex: "#fef08a", bg: "bg-yellow-200 border-yellow-100 text-gray-950 font-medium" }, // Slightly Lighter Yellow
-            { label: "YELLOW ORANGE", val: 1.5, hex: "#d97706", bg: "bg-amber-600 border-amber-500 text-white font-medium" }, // Slightly Darker Amber
+            { label: "YELLOW", val: 2.0, hex: "#facc15", bg: "bg-yellow-400 border-yellow-300 text-gray-950 font-medium" }, // Original Stable Yellow
+            { label: "YELLOW ORANGE", val: 1.5, hex: "#d97706", bg: "bg-amber-600 border-amber-500 text-white font-medium" }, // Rich Deeper Amber
             { label: "RED ORANGE", val: 1.0, hex: "#ea580c", bg: "bg-orange-600 border-orange-400 text-white" },
             { label: "RED", val: 0.5, hex: "#dc2626", bg: "bg-red-600 border-red-400 text-white" },
             { label: "GREY", val: 0.0, hex: "#475569", bg: "bg-slate-600 border-slate-400 text-slate-100" }
@@ -336,8 +351,14 @@
                 masterStateCache = data ? data.reviews_cache : {};
                 profileFavoritesArray = data && data.favorites_grid ? data.favorites_grid : [null, null, null, null];
             } else {
-                masterStateCache = targetMeta?.cache || defaultSeedData;
-                profileFavoritesArray = targetMeta?.favorites || [null, null, null, null];
+                // LOCAL STORAGE LOCAL CHRONICLE SYSTEM INTEGRATION
+                if (isViewingOwnProfile && localStorage.getItem("musicboxd_local_cache")) {
+                    masterStateCache = JSON.parse(localStorage.getItem("musicboxd_local_cache"));
+                    profileFavoritesArray = JSON.parse(localStorage.getItem("musicboxd_local_favorites")) || [null, null, null, null];
+                } else {
+                    masterStateCache = targetMeta?.cache || defaultSeedData;
+                    profileFavoritesArray = targetMeta?.favorites || [null, null, null, null];
+                }
             }
 
             selectedBrowsingArtistContext = "";
@@ -354,9 +375,20 @@
             if (currentAuthenticatedUser) {
                 await loadProfileDataByUserId(currentAuthenticatedUser.id);
             } else {
-                activeProfileOwnerId = null; isViewingOwnProfile = true; masterStateCache = defaultSeedData; profileFavoritesArray = [null,null,null,null];
+                activeProfileOwnerId = null; 
+                isViewingOwnProfile = true;
+                
+                // Pull from Local Storage data vaults if available
+                if (localStorage.getItem("musicboxd_local_cache")) {
+                    masterStateCache = JSON.parse(localStorage.getItem("musicboxd_local_cache"));
+                    profileFavoritesArray = JSON.parse(localStorage.getItem("musicboxd_local_favorites")) || [null, null, null, null];
+                } else {
+                    masterStateCache = defaultSeedData; 
+                    profileFavoritesArray = [null,null,null,null];
+                }
+                
                 document.getElementById("profileDashboardName").textContent = "Music Curator";
-                document.getElementById("profileInstructionText").textContent = "Log in to build an account, auto-import titles from Spotify, and publish your ratings grid online.";
+                document.getElementById("profileInstructionText").textContent = "Your ratings data is automatically cached locally to prevent work from being lost during design updates.";
                 selectedBrowsingArtistContext = ""; refreshDropdownListing(); recalculateMetricsStats(); renderFavoritesDisplaySlots(); evaluateUIStateContext(); showView('profile-view');
             }
         }
@@ -368,7 +400,7 @@
             if (supabaseClient) {
                 let res = (mode === 'signup') ? await supabaseClient.auth.signUp({ email, password }) : await supabaseClient.auth.signInWithPassword({ email, password });
                 if (res.error) return alert(res.error.message);
-                if (mode === 'signup') await supabaseClient.from('music_profiles').insert({ user_id: res.data.user.id, email: email, reviews_cache: defaultSeedData, favorites_grid: [null,null,null,null] });
+                if (mode === 'signup') await supabaseClient.from('music_profiles').insert({ user_id: res.data.user.id, email: email, reviews_cache: masterStateCache, favorites_grid: profileFavoritesArray });
                 currentAuthenticatedUser = res.data.user;
             } else {
                 currentAuthenticatedUser = { email: email, id: "sim-uid-" + btoa(email) };
@@ -379,7 +411,7 @@
         function handleSignOut() { if (supabaseClient) supabaseClient.auth.signOut(); currentAuthenticatedUser = null; revertToOwnProfile(); }
 
         function evaluateUIStateContext() {
-            const canModify = currentAuthenticatedUser && isViewingOwnProfile;
+            const canModify = currentAuthenticatedUser || isViewingOwnProfile; // Local structural edits permitted inside fallback mode
             document.getElementById(currentAuthenticatedUser ? "loggedOutState" : "loggedInState").classList.add("hidden");
             document.getElementById(currentAuthenticatedUser ? "loggedInState" : "loggedOutState").classList.remove("hidden");
             if (currentAuthenticatedUser) document.getElementById("userEmailBadge").textContent = currentAuthenticatedUser.email;
@@ -390,7 +422,18 @@
         }
 
         async function saveState() {
-            if (!isViewingOwnProfile || !currentAuthenticatedUser) return;
+            // ALWAYS preserve modifications safely in local storage fallback logs
+            if (isViewingOwnProfile) {
+                localStorage.setItem("musicboxd_local_cache", JSON.stringify(masterStateCache));
+                localStorage.setItem("musicboxd_local_favorites", JSON.stringify(profileFavoritesArray));
+            }
+            
+            if (!isViewingOwnProfile || !currentAuthenticatedUser) {
+                recalculateMetricsStats();
+                buildGlobalSpreadsheetTableAndPieChart(selectedBrowsingArtistContext);
+                return;
+            }
+            
             if (supabaseClient) {
                 await supabaseClient.from('music_profiles').upsert({ 
                     user_id: currentAuthenticatedUser.id, 
@@ -644,7 +687,7 @@
             selectedBrowsingArtistContext = ""; saveState(); refreshDropdownListing(); revertToOwnProfile();
         }
 
-        // --- HOVER QUANTITY PIE CHART DRAW ENGINE ---
+        // --- HOVER QUANTITY PIE CHART & KEY MATRIX DRAW ENGINE ---
         function buildGlobalSpreadsheetTableAndPieChart(artistName, highlightIndex = null) {
             const canvas = document.getElementById("metricsDistributionPieChart"); if(!canvas) return;
             const ctx = canvas.getContext("2d");
@@ -654,15 +697,36 @@
             const tallyData = {}; ratingLabels.forEach(l => tallyData[l.val] = 0);
             let totalTracksScoreCount = 0;
 
+            // Gather precise track score counts
             albums.forEach(alb => { 
                 alb.tracks.forEach(t => { 
-                    if(tallyData[t.rating] !== undefined) { tallyData[t.rating]++; totalTracksScoreCount++; } 
+                    // Round to nearest 0.5 step safely to map onto matrix boundaries
+                    const standardizedRating = Math.round(t.rating * 2) / 2;
+                    if(tallyData[standardizedRating] !== undefined) { tallyData[standardizedRating]++; totalTracksScoreCount++; } 
                 }); 
             });
 
+            // Update Side Spreadsheet Matrix Legend Table
+            const legendBody = document.getElementById("spreadsheetKeyTableBody");
+            if (legendBody) {
+                legendBody.innerHTML = "";
+                ratingLabels.forEach((l, index) => {
+                    const rowCount = tallyData[l.val] || 0;
+                    const row = document.createElement("div");
+                    // Highlight the target row if the pie slice is hovered
+                    row.className = `grid grid-cols-3 p-2 border-b border-gray-900/60 items-center transition duration-150 ${highlightIndex === index ? 'bg-gray-800 text-white font-bold' : 'text-gray-400'}`;
+                    row.innerHTML = `
+                        <span class="font-mono text-[11px] px-1.5 py-0.5 rounded ${l.bg} w-max">${l.val.toFixed(1)}</span>
+                        <span class="text-[10px] tracking-wide text-gray-400">${l.label}</span>
+                        <span class="text-right font-mono font-bold text-gray-300">${rowCount}</span>
+                    `;
+                    legendBody.appendChild(row);
+                });
+            }
+
             if (totalTracksScoreCount === 0) {
-                ctx.beginPath(); ctx.arc(128, 128, 110, 0, 2 * Math.PI); ctx.fillStyle = "#1e293b"; ctx.fill();
-                ctx.fillStyle = "#64748b"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center"; ctx.fillText("No Track Data", 128, 132);
+                ctx.beginPath(); ctx.arc(112, 112, 100, 0, 2 * Math.PI); ctx.fillStyle = "#1e293b"; ctx.fill();
+                ctx.fillStyle = "#64748b"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center"; ctx.fillText("No Track Data", 112, 116);
                 return;
             }
 
@@ -676,17 +740,17 @@
                 const slicePercentage = sliceCount / totalTracksScoreCount;
                 const endAngle = startAngle + (slicePercentage * 2 * Math.PI);
 
-                // Save coordinate data boundaries for precise canvas arithmetic mapping
-                pieChartSliceAnglesBuffer.push({ start: startAngle, end: endAngle, label: l.label, val: l.val, count: sliceCount });
+                // Save coordinate data boundaries for precise canvas mapping calculations
+                pieChartSliceAnglesBuffer.push({ start: startAngle, end: endAngle, label: l.label, val: l.val, count: sliceCount, ratingLabelIndex: index });
 
                 ctx.beginPath();
-                ctx.moveTo(128, 128);
-                ctx.arc(128, 128, (highlightIndex === index) ? 116 : 110, startAngle, endAngle);
+                ctx.moveTo(112, 112);
+                ctx.arc(112, 112, (highlightIndex === index) ? 106 : 100, startAngle, endAngle);
                 ctx.closePath();
-                ctx.fillStyle = l.hex;
+                ctx.fillStyle = l.hex; // Perfect color matching with tracks color definitions
                 ctx.fill();
 
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1.5;
                 ctx.strokeStyle = "#06080c";
                 ctx.stroke();
 
@@ -694,21 +758,23 @@
             });
 
             // Center Ring Punch
-            ctx.beginPath(); ctx.arc(128, 128, 42, 0, 2 * Math.PI); ctx.fillStyle = "#090d16"; ctx.fill();
+            ctx.beginPath(); ctx.arc(112, 112, 38, 0, 2 * Math.PI); ctx.fillStyle = "#090d16"; ctx.fill();
 
             // Overlay spreadsheet floating micro tooltips if item is actively targeted by mouse position 
-            if (highlightIndex !== null && pieChartSliceAnglesBuffer[highlightIndex]) {
-                const slice = pieChartSliceAnglesBuffer[highlightIndex];
-                ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-                ctx.fillRect(68, 114, 120, 30);
-                ctx.strokeStyle = "#4b5563";
-                ctx.lineWidth = 1;
-                ctx.strokeRect(68, 114, 120, 30);
+            if (highlightIndex !== null) {
+                const slice = pieChartSliceAnglesBuffer.find(s => s.ratingLabelIndex === highlightIndex);
+                if (slice) {
+                    ctx.fillStyle = "rgba(4, 6, 10, 0.95)";
+                    ctx.fillRect(52, 98, 120, 28);
+                    ctx.strokeStyle = "#4b5563";
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(52, 98, 120, 28);
 
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "black 10px monospace";
-                ctx.textAlign = "center";
-                ctx.fillText(`[${slice.val.toFixed(1)}] ${slice.count} Tracks`, 128, 132);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "bold 10px monospace";
+                    ctx.textAlign = "center";
+                    ctx.fillText(`[${slice.val.toFixed(1)}] ${slice.count} Tracks`, 112, 115);
+                }
             }
         }
 
@@ -717,11 +783,11 @@
             
             canvas.addEventListener("mousemove", (e) => {
                 const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left - 128;
-                const y = e.clientY - rect.top - 128;
+                const x = e.clientX - rect.left - 112;
+                const y = e.clientY - rect.top - 112;
                 
                 const distance = Math.sqrt(x*x + y*y);
-                if (distance > 110 || distance < 42) {
+                if (distance > 100 || distance < 38) {
                     buildGlobalSpreadsheetTableAndPieChart(selectedBrowsingArtistContext, null);
                     return;
                 }
@@ -733,8 +799,7 @@
                 for (let i = 0; i < pieChartSliceAnglesBuffer.length; i++) {
                     const slice = pieChartSliceAnglesBuffer[i];
                     if (angle >= slice.start && angle <= slice.end) {
-                        // Map internal index structure back to matching label reference entry arrays
-                        targetedIndex = ratingLabels.findIndex(l => l.val === slice.val);
+                        targetedIndex = slice.ratingLabelIndex;
                         break;
                     }
                 }
