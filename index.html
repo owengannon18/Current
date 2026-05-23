@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MusicBoxd — High Contrast Community Edition</title>
+    <title>MusicBoxd — Premium Spreadsheet Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #080a0f; color: #a0aec0; font-family: system-ui, sans-serif; }
+        body { background-color: #06080c; color: #a0aec0; font-family: system-ui, sans-serif; }
         .text-white-important { color: #ffffff !important; }
         .app-view { display: none; }
         .app-view.active { display: block; }
@@ -93,20 +93,45 @@
 
         <div id="artist-view" class="app-view space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-4">
-                <div class="flex items-center gap-3">
-                    <button onclick="showView('profile-view')" class="text-xs font-bold bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-400 hover:text-white">← Home Profile</button>
-                    <h2 class="text-xl font-black text-white" id="artistPageHeaderTitle">Artist Workspace</h2>
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <button onclick="showView('profile-view')" class="text-xs font-bold bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-400 hover:text-white flex-shrink-0">← Home Profile</button>
+                    
+                    <div class="flex items-center gap-2 flex-grow">
+                        <div id="artistHeaderTitleWrapper" class="relative group w-full">
+                            <input type="text" id="artistPageHeaderTitleInput" class="bg-transparent border-b border-transparent hover:border-purple-500/50 focus:border-purple-500 font-black text-white text-xl px-1 py-0.5 focus:outline-none transition w-full max-w-sm" title="Click to fix typos / edit name">
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-shrink-0">
                     <button id="deleteArtistBtnAction" onclick="deleteEntireArtistContext()" class="hidden bg-red-950 border border-red-800 text-red-400 hover:bg-red-700 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition">⚠️ Delete Artist Profile</button>
                     <button id="addAlbumButtonAction" onclick="openModal('albumModal')" class="hidden bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add New Album</button>
                 </div>
             </div>
 
-            <div id="artistGlobalSummaryBox" class="bg-gray-900/20 border border-gray-900 rounded-xl p-4">
-                <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Global Track Rating Spreadsheet Key Metrics</h4>
-                <div id="artistGlobalHistogramGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-2 font-mono text-[11px]">
+            <div id="artistGlobalSummaryBox" class="bg-gray-950 border border-gray-900 rounded-xl p-5 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-7 space-y-2">
+                    <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-900 pb-2">Spreadsheet Track Rating Metrics Table</h4>
+                    <div class="max-h-64 overflow-y-auto border border-gray-900 rounded-lg bg-black/20">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-gray-900/50 text-gray-500 uppercase tracking-wider font-bold border-b border-gray-900">
+                                    <th class="p-2 pl-4">Tier Score</th>
+                                    <th class="p-2">Color Swatch</th>
+                                    <th class="p-2 pr-4 text-right">Tracks Tally</th>
+                                </tr>
+                            </thead>
+                            <tbody id="spreadsheetMetricsTableBody" class="divide-y divide-gray-900/60 font-medium">
+                                </tbody>
+                        </table>
                     </div>
+                </div>
+
+                <div class="md:col-span-5 flex flex-col items-center justify-center bg-black/10 border border-gray-900/50 p-4 rounded-xl">
+                    <h5 class="text-[9px] font-black uppercase tracking-wider text-gray-500 mb-3 text-center">Data Key Distribution Pie Chart</h5>
+                    <div class="w-40 h-40 relative flex items-center justify-center">
+                        <canvas id="metricsDistributionPieChart" width="160" height="160" class="max-w-full max-h-full"></canvas>
+                    </div>
+                </div>
             </div>
 
             <div id="artistAlbumsContainer" class="space-y-8"></div>
@@ -218,19 +243,19 @@
             }]
         };
 
-        // Your requested high contrast vibrant neon spreadsheet color metrics
+        // Spreadsheet neon colors matching your updated green specifications
         const ratingLabels = [
-            { label: "PURPLE", val: 5.0, bg: "bg-purple-600 border-purple-400 text-white font-black shadow-[0_0_12px_rgba(147,51,234,0.4)]" },
-            { label: "BLUE", val: 4.5, bg: "bg-blue-600 border-blue-400 text-white font-bold" },
-            { label: "LIGHT BLUE", val: 4.0, bg: "bg-sky-500 border-sky-300 text-gray-950 font-bold" },
-            { label: "TEAL", val: 3.5, bg: "bg-teal-500 border-teal-300 text-gray-950 font-bold" },
-            { label: "GREEN", val: 3.0, bg: "bg-emerald-500 border-emerald-300 text-gray-950 font-bold" },
-            { label: "YELLOW GREEN", val: 2.5, bg: "bg-lime-400 border-lime-300 text-gray-950 font-medium" },
-            { label: "YELLOW", val: 2.0, bg: "bg-yellow-400 border-yellow-200 text-gray-950 font-medium" },
-            { label: "YELLOW ORANGE", val: 1.5, bg: "bg-amber-500 border-amber-300 text-white font-medium" },
-            { label: "RED ORANGE", val: 1.0, bg: "bg-orange-600 border-orange-400 text-white" },
-            { label: "RED", val: 0.5, bg: "bg-red-600 border-red-400 text-white" },
-            { label: "GREY", val: 0.0, bg: "bg-slate-700 border-slate-500 text-slate-200" }
+            { label: "PURPLE", val: 5.0, hex: "#9333ea", bg: "bg-purple-600 border-purple-400 text-white font-black" },
+            { label: "BLUE", val: 4.5, hex: "#2563eb", bg: "bg-blue-600 border-blue-400 text-white font-bold" },
+            { label: "LIGHT BLUE", val: 4.0, hex: "#0ea5e9", bg: "bg-sky-500 border-sky-300 text-gray-950 font-bold" },
+            { label: "TEAL", val: 3.5, hex: "#10b981", bg: "bg-emerald-500 border-emerald-300 text-gray-950 font-bold" }, // Inherited emerald green
+            { label: "GREEN", val: 3.0, hex: "#065f46", bg: "bg-emerald-800 border-emerald-600 text-white font-bold" },    // Darker forest green
+            { label: "YELLOW GREEN", val: 2.5, hex: "#a3e635", bg: "bg-lime-400 border-lime-300 text-gray-950 font-medium" },
+            { label: "YELLOW", val: 2.0, hex: "#facc15", bg: "bg-yellow-400 border-yellow-200 text-gray-950 font-medium" },
+            { label: "YELLOW ORANGE", val: 1.5, hex: "#f59e0b", bg: "bg-amber-500 border-amber-300 text-white font-medium" },
+            { label: "RED ORANGE", val: 1.0, hex: "#ea580c", bg: "bg-orange-600 border-orange-400 text-white" },
+            { label: "RED", val: 0.5, hex: "#dc2626", bg: "bg-red-600 border-red-400 text-white" },
+            { label: "GREY", val: 0.0, hex: "#475569", bg: "bg-slate-600 border-slate-400 text-slate-100" }
         ];
 
         function getStyleClassForScore(score) {
@@ -244,6 +269,11 @@
         }
 
         async function initApp() {
+            // Bind editable protection input change handler
+            document.getElementById("artistPageHeaderTitleInput").addEventListener("change", (e) => {
+                modifyArtistPageContextName(e.target.value.trim());
+            });
+
             if (checkSupabaseConnected()) {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 const { data } = await supabaseClient.auth.getSession();
@@ -345,16 +375,19 @@
             document.getElementById("navAddArtistBtn").className = canModify ? "bg-purple-600 text-white font-bold px-3 py-1 rounded hover:bg-purple-500 transition" : "hidden";
             document.getElementById("addAlbumButtonAction").className = canModify ? "bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition" : "hidden";
             document.getElementById("deleteArtistBtnAction").className = canModify ? "bg-red-950 border border-red-800 text-red-400 hover:bg-red-700 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition" : "hidden";
+            
+            // Lock header input if unauthorized
+            document.getElementById("artistPageHeaderTitleInput").readOnly = !canModify;
         }
 
         async function saveState() {
             if (!isViewingOwnProfile || !currentAuthenticatedUser) return;
             if (supabaseClient) await supabaseClient.from('music_profiles').upsert({ user_id: currentAuthenticatedUser.id, email: currentAuthenticatedUser.email, reviews_cache: masterStateCache });
             recalculateMetricsStats();
-            buildGlobalArtistHistogram(selectedBrowsingArtistContext);
+            buildGlobalSpreadsheetTableAndPieChart(selectedBrowsingArtistContext);
         }
 
-        // --- SPOTIFY RADAR SECURITY MECHANISMS ---
+        // --- SPOTIFY RADAR AUTOMATIONS ---
         function generateRandomString(l) { let p = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; let v = crypto.getRandomValues(new Uint8Array(l)); return Array.from(v, x => p[x % p.length]).join(''); }
         async function sha256(plain) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode(plain)); }
         function base64urlencode(a) { return btoa(String.fromCharCode.apply(null, new Uint8Array(a))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -413,7 +446,28 @@
             } catch (err) { alert(err.message); }
         }
 
-        // --- MANAGE ORDER REARRANGEMENTS ---
+        // --- ARTIST PROFILE META RE-IDENTIFICATION ---
+        function modifyArtistPageContextName(newName) {
+            if (!isViewingOwnProfile || !selectedBrowsingArtistContext || !newName) return;
+            if (newName === selectedBrowsingArtistContext) return;
+
+            if (masterStateCache[newName]) {
+                return alert("An artist profile with that name already exists on your dashboard.");
+            }
+
+            // Remap pointer reference keys cleanly
+            masterStateCache[newName] = masterStateCache[selectedBrowsingArtistContext];
+            // Update the back-references inside inner album structural components
+            masterStateCache[newName].forEach(album => { album.artist = newName; });
+            
+            delete masterStateCache[selectedBrowsingArtistContext];
+            selectedBrowsingArtistContext = newName;
+
+            saveState();
+            refreshDropdownListing();
+            renderArtistReviewPage(selectedBrowsingArtistContext);
+        }
+
         function moveAlbumInSequence(albumId, direction) {
             if (!isViewingOwnProfile || !selectedBrowsingArtistContext) return;
             const targetList = masterStateCache[selectedBrowsingArtistContext] || [];
@@ -421,9 +475,8 @@
             if (idx === -1) return;
             
             const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
-            if (targetIdx < 0 || targetIdx >= targetList.length) return; // Out of bounds security block
+            if (targetIdx < 0 || targetIdx >= targetList.length) return;
             
-            // Swap places instantly inside reference layout pointer array
             const temp = targetList[idx];
             targetList[idx] = targetList[targetIdx];
             targetList[targetIdx] = temp;
@@ -463,9 +516,8 @@
                 if (field === 'rating') {
                     const parsedVal = parseFloat(value || 0.0);
                     alb.officialRating = parsedVal;
-                    // Force complete theme color alignment synchronization instantly across metrics
-                    const newClass = `flex items-center gap-2 border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(parsedVal)}`;
-                    document.getElementById(`deckavgwrap-${albumId}`).className = newClass;
+                    const syncedStyle = getStyleClassForScore(parsedVal);
+                    document.getElementById(`deckavgwrap-${albumId}`).className = `flex items-center gap-2 border px-3 py-1.5 rounded-lg transition ${syncedStyle}`;
                 } else {
                     alb[field] = value;
                 }
@@ -511,28 +563,72 @@
             selectedBrowsingArtistContext = ""; saveState(); refreshDropdownListing(); revertToOwnProfile();
         }
 
-        // --- ARTIST LEVEL CONSOLIDATED ACCUMULATOR ---
-        function buildGlobalArtistHistogram(artistName) {
-            const grid = document.getElementById("artistGlobalHistogramGrid"); if(!grid) return;
-            grid.innerHTML = "";
-            const albums = masterStateCache[artistName] || [];
-            const globalTally = {}; ratingLabels.forEach(l => globalTally[l.val] = 0);
+        // --- MASTER DATA VIEWPORT RENDERERS ---
+        function buildGlobalSpreadsheetTableAndPieChart(artistName) {
+            const tbody = document.getElementById("spreadsheetMetricsTableBody"); if(!tbody) return;
+            tbody.innerHTML = "";
             
-            albums.forEach(alb => { alb.tracks.forEach(t => { if(globalTally[t.rating] !== undefined) globalTally[t.rating]++; }); });
+            const albums = masterStateCache[artistName] || [];
+            const tallyData = {}; ratingLabels.forEach(l => tallyData[l.val] = 0);
+            let totalTracksScoreCount = 0;
 
-            ratingLabels.forEach(l => {
-                const count = globalTally[l.val] || 0;
-                const card = document.createElement("div");
-                if (count > 0) {
-                    card.className = `p-2 rounded-lg border flex flex-col items-center justify-center font-bold text-center ${l.bg}`;
-                } else {
-                    card.className = "p-2 rounded-lg border border-gray-900 bg-gray-950/45 text-gray-600 flex flex-col items-center justify-center text-center";
-                }
-                // Text color protection override helper for bright light-blue/yellow nodes
-                const textContrastStyle = (l.val === 4.0 || l.val === 3.5 || l.val === 3.0 || l.val === 2.5 || l.val === 2.0) && count > 0 ? 'text-gray-950 font-black' : 'text-white opacity-90';
-                card.innerHTML = `<span class="text-[8px] uppercase tracking-tighter truncate w-full block">${l.label}</span><span class="text-sm font-black mt-0.5">${l.val.toFixed(1)}</span><span class="text-[10px] bg-black/50 px-1.5 py-0.5 rounded mt-1 font-mono ${textContrastStyle}">${count}</span>`;
-                grid.appendChild(card);
+            albums.forEach(alb => { 
+                alb.tracks.forEach(t => { 
+                    if(tallyData[t.rating] !== undefined) { tallyData[t.rating]++; totalTracksScoreCount++; } 
+                }); 
             });
+
+            // Populate table row layouts
+            ratingLabels.forEach(l => {
+                const count = tallyData[l.val] || 0;
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-gray-900/30 transition";
+                tr.innerHTML = `
+                    <td class="p-2.5 pl-4 font-mono font-bold text-gray-300">${l.val.toFixed(1)} — ${l.label}</td>
+                    <td class="p-2"><div class="w-24 h-5 rounded border ${l.bg} text-[10px] flex items-center justify-center uppercase tracking-tighter shadow-sm font-bold truncate">Key Swatch</div></td>
+                    <td class="p-2 pr-4 text-right font-mono text-white font-black">${count}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Draw clean HTML5 canvas pie chart dynamically
+            const canvas = document.getElementById("metricsDistributionPieChart"); if(!canvas) return;
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (totalTracksScoreCount === 0) {
+                // Empty fallback state
+                ctx.beginPath(); ctx.arc(80, 80, 70, 0, 2 * Math.PI); ctx.fillStyle = "#1e293b"; ctx.fill();
+                ctx.fillStyle = "#64748b"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center"; ctx.fillText("No Track Data", 80, 84);
+                return;
+            }
+
+            let startAngle = -Math.PI / 2; // Face straight up
+            ratingLabels.forEach(l => {
+                const sliceCount = tallyData[l.val] || 0;
+                if(sliceCount === 0) return;
+
+                const slicePercentage = sliceCount / totalTracksScoreCount;
+                const endAngle = startAngle + (slicePercentage * 2 * Math.PI);
+
+                // Paint segment
+                ctx.beginPath();
+                ctx.moveTo(80, 80);
+                ctx.arc(80, 80, 72, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = l.hex;
+                ctx.fill();
+
+                // Draw thin dividing lines for crisp spreadsheet accuracy
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "#06080c";
+                ctx.stroke();
+
+                startAngle = endAngle;
+            });
+
+            // Clean center punch cutout ring
+            ctx.beginPath(); ctx.arc(80, 80, 26, 0, 2 * Math.PI); ctx.fillStyle = "#090d16"; ctx.fill();
         }
 
         function handleDropdownSelection(select) {
@@ -550,8 +646,8 @@
 
         function renderArtistReviewPage(artistName) {
             if(!artistName) return;
-            document.getElementById("artistPageHeaderTitle").textContent = `${artistName}`;
-            buildGlobalArtistHistogram(artistName);
+            document.getElementById("artistPageHeaderTitleInput").value = artistName;
+            buildGlobalSpreadsheetTableAndPieChart(artistName);
             const container = document.getElementById("artistAlbumsContainer"); container.innerHTML = "";
             const albums = masterStateCache[artistName] || [];
             
@@ -640,7 +736,7 @@
                                     <span class="text-[8px] font-mono tracking-widest text-gray-500 uppercase">Artwork Asset URL Link</span>
                                     <input type="text" value="${album.artworkUrl || ''}" placeholder="Paste image link..." onchange="updateAlbumInlineMetadata('${album.id}', 'artworkUrl', this.value)" class="bg-gray-900 border border-gray-850 rounded px-2 py-1 text-[10px] text-gray-400 font-mono focus:outline-none w-full">
                                 </div>
-                            ` : '<span class="text-[9px] font-mono tracking-widest text-gray-600 uppercase text-center">Spotify Source Media Link</span>'}
+                            ` : '<span class="text-[9px] font-mono tracking-widest text-gray-600 uppercase text-center">Spotify Digital Source Link</span>'}
                         </div>
                     </div>
                 `;
