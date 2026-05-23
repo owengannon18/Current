@@ -15,12 +15,12 @@
         .modal-overlay.active { display: flex; }
     </style>
 </head>
-<body class="p-4 md:p-8 selection:bg-green-500 selection:text-black">
+<body class="p-4 md:p-8 selection:bg-purple-500 selection:text-white">
 
     <div class="max-w-6xl mx-auto">
         <nav class="flex flex-col md:flex-row items-center justify-between border-b border-gray-800 pb-6 mb-8 gap-4">
             <div class="flex items-center gap-3 cursor-pointer" onclick="revertToOwnProfile()">
-                <div class="bg-gradient-to-tr from-green-500 to-emerald-400 w-8 h-8 rounded-full flex items-center justify-center text-black font-extrabold text-sm tracking-tighter">M</div>
+                <div class="bg-gradient-to-tr from-purple-500 to-indigo-500 w-8 h-8 rounded-full flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">M</div>
                 <span class="text-white font-bold tracking-wider text-sm uppercase">MusicBoxd</span>
             </div>
             
@@ -29,10 +29,10 @@
                     <input type="email" id="loginEmail" placeholder="Enter Email" class="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-white focus:outline-none w-36">
                     <input type="password" id="loginPassword" placeholder="Password" class="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-white focus:outline-none w-36">
                     <button onclick="handleAccountAuth('signup')" class="bg-gray-800 text-gray-300 font-bold px-2.5 py-1 rounded hover:bg-gray-700 transition">Register</button>
-                    <button onclick="handleAccountAuth('signin')" class="bg-green-600 text-white font-bold px-2.5 py-1 rounded hover:bg-green-500 transition">Sign In</button>
+                    <button onclick="handleAccountAuth('signin')" class="bg-purple-600 text-white font-bold px-2.5 py-1 rounded hover:bg-purple-500 transition">Sign In</button>
                 </div>
                 <div id="loggedInState" class="hidden flex items-center gap-3">
-                    <span class="font-medium text-green-400 font-bold bg-green-500/10 px-2 py-0.5 rounded" id="userEmailBadge">user@account.com</span>
+                    <span class="font-medium text-purple-400 font-bold bg-purple-500/10 px-2 py-0.5 rounded" id="userEmailBadge">user@account.com</span>
                     <button id="navAddArtistBtn" onclick="openModal('artistModal')" class="bg-blue-600 text-white font-bold px-3 py-1 rounded hover:bg-blue-500 transition">+ Add Artist</button>
                     <button onclick="handleSignOut()" class="text-red-400 font-bold hover:underline ml-1">Sign Out</button>
                 </div>
@@ -42,7 +42,7 @@
                 <select id="communityProfileSelect" onchange="handleCommunityProfileSelection(this)" class="bg-gray-950 border border-gray-850 rounded-lg px-3 py-2 text-sm text-blue-400 focus:outline-none focus:border-blue-500 cursor-pointer w-full sm:w-56">
                     <option value="">👥 Explore Community Profiles...</option>
                 </select>
-                <select id="globalArtistSelect" onchange="handleDropdownSelection(this)" class="bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-green-500 cursor-pointer w-full sm:w-48">
+                <select id="globalArtistSelect" onchange="handleDropdownSelection(this)" class="bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500 cursor-pointer w-full sm:w-48">
                     <option value="">🔍 Select an Artist...</option>
                 </select>
             </div>
@@ -50,7 +50,7 @@
 
         <div id="profile-view" class="app-view active space-y-10">
             <section class="flex flex-col md:flex-row gap-6 items-center border-b border-gray-900 pb-10">
-                <div id="profileAvatar" class="w-24 h-24 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-full border-2 border-gray-800 flex-shrink-0 shadow-xl"></div>
+                <div id="profileAvatar" class="w-24 h-24 bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 rounded-full border-2 border-gray-800 flex-shrink-0 shadow-xl"></div>
                 <div class="text-center md:text-left flex-grow">
                     <div class="flex flex-col sm:flex-row items-center gap-2 justify-center md:justify-start">
                         <h2 class="text-3xl font-black text-white tracking-tight" id="profileDashboardName">Music Curator</h2>
@@ -68,7 +68,7 @@
                     <div class="px-3"><span class="block text-2xl font-bold text-white tracking-tight" id="statAlbums">0</span><span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Albums</span></div>
                     <div class="px-3"><span class="block text-2xl font-bold text-white tracking-tight" id="statTracks">0</span><span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Tracks</span></div>
                     <div class="px-3"><span class="block text-2xl font-bold text-white tracking-tight" id="statArtists">0</span><span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Artists</span></div>
-                    <div class="px-3"><span class="block text-2xl font-bold text-green-400 tracking-tight" id="statAvg">0.0</span><span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Global Avg</span></div>
+                    <div class="px-3"><span class="block text-2xl font-bold text-purple-400 tracking-tight" id="statAvg">0.0</span><span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Global Avg</span></div>
                 </div>
             </section>
 
@@ -97,11 +97,14 @@
                     <button onclick="showView('profile-view')" class="text-xs font-bold bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-400 hover:text-white">← Home Profile</button>
                     <h2 class="text-xl font-black text-white" id="artistPageHeaderTitle">Artist Workspace</h2>
                 </div>
-                <button id="addAlbumButtonAction" onclick="openModal('albumModal')" class="hidden bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add New Album Review</button>
+                <div class="flex items-center gap-2">
+                    <button id="deleteArtistBtnAction" onclick="deleteEntireArtistContext()" class="hidden bg-red-950/60 border border-red-900 text-red-400 hover:bg-red-900 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition">⚠️ Delete Artist Profile</button>
+                    <button id="addAlbumButtonAction" onclick="openModal('albumModal')" class="hidden bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add New Album</button>
+                </div>
             </div>
 
             <div id="artistGlobalSummaryBox" class="bg-gray-900/20 border border-gray-900 rounded-xl p-4">
-                <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Global Score Inversion Ledger (Full Discography Distribution)</h4>
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Global Track Rating Spreadsheet Key Metrics</h4>
                 <div id="artistGlobalHistogramGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-2 font-mono text-[11px]">
                     </div>
             </div>
@@ -115,11 +118,11 @@
             <h3 class="text-lg font-bold text-white">Add New Artist Profile</h3>
             <div>
                 <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Artist Name</label>
-                <input type="text" id="newArtistNameInput" placeholder="e.g., boygenius" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                <input type="text" id="newArtistNameInput" placeholder="e.g., boygenius" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none focus:border-purple-500">
             </div>
             <div class="flex justify-end gap-2 text-xs font-bold">
                 <button onclick="closeModal('artistModal')" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
-                <button onclick="submitNewArtist()" class="bg-blue-600 px-4 py-2 rounded text-white hover:bg-blue-500">Save Artist</button>
+                <button onclick="submitNewArtist()" class="bg-purple-600 px-4 py-2 rounded text-white hover:bg-purple-500">Save Artist</button>
             </div>
         </div>
     </div>
@@ -133,15 +136,15 @@
 
             <div class="bg-gray-950 p-3.5 rounded-xl border border-gray-800/80 space-y-3">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-black tracking-wider text-green-400 flex items-center gap-1.5">
+                    <span class="text-xs font-black tracking-wider text-purple-400 flex items-center gap-1.5">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.565.387-.86.207-2.377-1.454-5.37-1.783-8.893-.982-.336.075-.668-.135-.744-.47-.075-.336.134-.668.47-.744 3.856-.88 7.15-.503 9.822 1.13.295.178.387.563.206.86zm1.224-2.72c-.226.367-.706.487-1.073.262-2.72-1.672-6.866-2.154-10.074-1.18-.413.125-.847-.107-.972-.52-.125-.413.107-.847.52-.972 3.666-1.112 8.232-.573 11.338 1.34.367.225.487.706.262 1.072zm.107-2.828C14.316 8.71 8.44 8.517 5.05 9.544c-.52.157-1.07-.143-1.227-.664-.158-.52.143-1.07.664-1.228 3.89-1.18 10.38-.954 14.512 1.5 1.125.667 1.5 2.11 1.5 2.11s-.41 1.15-1.575.61z"/></svg>
                         SPOTIFY AUTOFILL RADAR
                     </span>
-                    <button id="spotifyConnectBtn" onclick="connectSpotify()" class="bg-gray-900 border border-gray-800 text-gray-300 px-2 py-0.5 rounded text-[10px] font-bold hover:text-white hover:border-green-500 transition">Connect Spotify</button>
+                    <button id="spotifyConnectBtn" onclick="connectSpotify()" class="bg-gray-900 border border-gray-800 text-gray-300 px-2 py-0.5 rounded text-[10px] font-bold hover:text-white hover:border-purple-500 transition">Connect Spotify</button>
                 </div>
                 <div id="spotifySearchContainer" class="hidden flex gap-2">
-                    <input type="text" id="spotifySearchInput" placeholder="Search album title..." class="flex-grow bg-gray-900 border border-gray-800 rounded p-1.5 text-xs text-white focus:outline-none focus:border-green-500">
-                    <button onclick="searchSpotifyAlbum()" class="bg-green-600 text-white font-bold px-3 py-1 rounded text-xs hover:bg-green-500 transition">Find</button>
+                    <input type="text" id="spotifySearchInput" placeholder="Search album title..." class="flex-grow bg-gray-900 border border-gray-800 rounded p-1.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                    <button onclick="searchSpotifyAlbum()" class="bg-purple-600 text-white font-bold px-3 py-1 rounded text-xs hover:bg-purple-500 transition">Find</button>
                 </div>
                 <div id="spotifyResults" class="divide-y divide-gray-900 max-h-40 overflow-y-auto rounded text-xs"></div>
             </div>
@@ -157,7 +160,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Initial Rating (1-5)</label>
-                    <input type="number" step="0.1" id="newAlbumRating" value="3.0" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none">
+                    <input type="number" step="0.1" id="newAlbumRating" value="0.0" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none">
                 </div>
                 <div class="col-span-2">
                     <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Artwork Image Link (Optional)</label>
@@ -170,7 +173,7 @@
             </div>
             <div class="flex justify-end gap-2 text-xs font-bold pt-2 border-t border-gray-800">
                 <button onclick="closeModal('albumModal')" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
-                <button onclick="submitNewAlbum()" class="bg-green-600 px-4 py-2 rounded text-white hover:bg-green-500">Add Album Card</button>
+                <button onclick="submitNewAlbum()" class="bg-purple-600 px-4 py-2 rounded text-white hover:bg-purple-500">Add Album Card</button>
             </div>
         </div>
     </div>
@@ -189,7 +192,7 @@
         let communityProfilesList = [];
         let temporaryArtworkUrlBuffer = "";
 
-        // Seed values exactly configured to your uploaded boygenius file matching track distributions [cite: 1]
+        // Seed data values configured to your boygenius tracking file layout
         const defaultSeedData = {
             "boygenius": [{
                 id: "bg-record-2023", 
@@ -197,7 +200,7 @@
                 artist: "boygenius", 
                 year: "2023", 
                 officialRating: 3.0,
-                artworkUrl: "https://i.scdn.co/image/ab67616d0000b273105a16dfab1ec693ec9f15fb", // boygenius artwork
+                artworkUrl: "https://i.scdn.co/image/ab67616d0000b273105a16dfab1ec693ec9f15fb",
                 tracks: [
                     { num: 1, title: "Without You Without Them", rating: 3.0 },
                     { num: 2, title: "$20", rating: 4.0 },
@@ -215,19 +218,19 @@
             }]
         };
 
-        // Your custom key rating configurations with corresponding UI background color styles [cite: 1]
+        // Your exact requested spreadsheet color-coding key metrics
         const ratingLabels = [
-            { label: "MASTERPIECE", val: 5.0, bg: "bg-emerald-950 border-emerald-500 text-emerald-400" },
-            { label: "AMAZING", val: 4.5, bg: "bg-green-950 border-green-500 text-green-400" },
-            { label: "VERY GOOD", val: 4.0, bg: "bg-teal-950/70 border-teal-600 text-teal-400" },
-            { label: "GOOD", val: 3.5, bg: "bg-cyan-950/60 border-cyan-600 text-cyan-400" },
-            { label: "PRETTY GOOD", val: 3.0, bg: "bg-sky-950/40 border-sky-700 text-sky-400" },
-            { label: "AVERAGE", val: 2.5, bg: "bg-gray-900 border-gray-700 text-gray-300" },
-            { label: "OK", val: 2.0, bg: "bg-orange-950/40 border-orange-800 text-orange-400" },
-            { label: "BAD", val: 1.5, bg: "bg-amber-950/50 border-amber-900 text-amber-500" },
-            { label: "VERY BAD", val: 1.0, bg: "bg-red-950/40 border-red-900 text-red-400" },
-            { label: "TERRIBLE", val: 0.5, bg: "bg-red-950 border-red-700 text-red-300" },
-            { label: "ATROCIOUS", val: 0.0, bg: "bg-rose-950 font-black border-rose-500 text-rose-400 animate-pulse" }
+            { label: "PURPLE", val: 5.0, bg: "bg-purple-950 border-purple-500 text-purple-300" },
+            { label: "BLUE", val: 4.5, bg: "bg-blue-950 border-blue-500 text-blue-300" },
+            { label: "LIGHT BLUE", val: 4.0, bg: "bg-sky-950 border-sky-400 text-sky-300" },
+            { label: "TEAL", val: 3.5, bg: "bg-teal-950 border-teal-500 text-teal-300" },
+            { label: "GREEN", val: 3.0, bg: "bg-green-950 border-green-500 text-green-300" },
+            { label: "YELLOW GREEN", val: 2.5, bg: "bg-lime-950 border-lime-500 text-lime-300" },
+            { label: "YELLOW", val: 2.0, bg: "bg-yellow-950 border-yellow-500 text-yellow-300" },
+            { label: "YELLOW ORANGE", val: 1.5, bg: "bg-amber-950 border-amber-500 text-amber-300" },
+            { label: "RED ORANGE", val: 1.0, bg: "bg-orange-950 border-orange-500 text-orange-300" },
+            { label: "RED", val: 0.5, bg: "bg-red-950 border-red-500 text-red-300" },
+            { label: "GREY", val: 0.0, bg: "bg-gray-900 border-gray-700 text-gray-400" }
         ];
 
         function getStyleClassForScore(score) {
@@ -339,8 +342,9 @@
             document.getElementById(currentAuthenticatedUser ? "loggedOutState" : "loggedInState").classList.add("hidden");
             document.getElementById(currentAuthenticatedUser ? "loggedInState" : "loggedOutState").classList.remove("hidden");
             if (currentAuthenticatedUser) document.getElementById("userEmailBadge").textContent = currentAuthenticatedUser.email;
-            document.getElementById("navAddArtistBtn").className = canModify ? "bg-blue-600 text-white font-bold px-3 py-1 rounded hover:bg-blue-500 transition" : "hidden";
-            document.getElementById("addAlbumButtonAction").className = canModify ? "bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition" : "hidden";
+            document.getElementById("navAddArtistBtn").className = canModify ? "bg-purple-600 text-white font-bold px-3 py-1 rounded hover:bg-purple-500 transition" : "hidden";
+            document.getElementById("addAlbumButtonAction").className = canModify ? "bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition" : "hidden";
+            document.getElementById("deleteArtistBtnAction").className = canModify ? "bg-red-950/60 border border-red-900 text-red-400 hover:bg-red-900 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition" : "hidden";
         }
 
         async function saveState() {
@@ -350,7 +354,7 @@
             buildGlobalArtistHistogram(selectedBrowsingArtistContext);
         }
 
-        // --- SPOTIFY RADAR PROTOTYPE PROTOCOLS (PKCE CODE FLOW) ---
+        // --- SPOTIFY RADAR CONNECTIVITY METHODS ---
         function generateRandomString(l) { let p = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; let v = crypto.getRandomValues(new Uint8Array(l)); return Array.from(v, x => p[x % p.length]).join(''); }
         async function sha256(plain) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode(plain)); }
         function base64urlencode(a) { return btoa(String.fromCharCode.apply(null, new Uint8Array(a))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
@@ -387,7 +391,7 @@
                 data.albums.items.forEach(album => {
                     const r = document.createElement("div"); r.className = "flex items-center gap-3 p-1.5 hover:bg-gray-900 cursor-pointer text-left";
                     r.onclick = () => autofillFromSpotifyId(album.id);
-                    r.innerHTML = `<div class="truncate flex-grow"><span class="block text-white font-bold truncate">${album.name}</span><span class="block text-[10px] text-gray-500 truncate">${album.artists[0].name}</span></div><span class="text-[10px] text-green-500 font-bold px-1.5 bg-green-500/10 rounded">Select</span>`;
+                    r.innerHTML = `<div class="truncate flex-grow"><span class="block text-white font-bold truncate">${album.name}</span><span class="block text-[10px] text-gray-500 truncate">${album.artists[0].name}</span></div><span class="text-[10px] text-purple-500 font-bold px-1.5 bg-purple-500/10 rounded">Select</span>`;
                     box.appendChild(r);
                 });
             } catch (err) { box.innerHTML = `<div class="p-2 text-red-400 text-center text-[10px]">Failed loading results.</div>`; }
@@ -409,7 +413,7 @@
             } catch (err) { alert(err.message); }
         }
 
-        // --- SUBMIT OPERATIONS ---
+        // --- CORE STATE EDITING ENGINES ---
         function submitNewArtist() {
             const name = document.getElementById("newArtistNameInput").value.trim(); if (!name || !isViewingOwnProfile) return;
             if (!masterStateCache[name]) { masterStateCache[name] = []; saveState(); refreshDropdownListing(); }
@@ -421,17 +425,42 @@
             if (!selectedBrowsingArtistContext || !isViewingOwnProfile) return;
             const title = document.getElementById("newAlbumTitle").value.trim();
             const year = document.getElementById("newAlbumYear").value.trim();
-            const rating = parseFloat(document.getElementById("newAlbumRating").value || 3.0);
+            const rating = parseFloat(document.getElementById("newAlbumRating").value || 0.0);
             const artwork = document.getElementById("newAlbumArtworkUrl").value.trim() || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop";
             const tracksText = document.getElementById("newAlbumTracksList").value.split('\n');
             if (!title || !year) return alert("Required fields missing.");
 
             const trackArray = []; let idx = 1;
-            tracksText.forEach(t => { if(t.trim()) { trackArray.push({ num: idx++, title: t.trim(), rating: 3.0 }); } });
+            // Default track score set to 0.0 upon initial ingest sequencer allocation
+            tracksText.forEach(t => { if(t.trim()) { trackArray.push({ num: idx++, title: t.trim(), rating: 0.0 }); } });
 
             masterStateCache[selectedBrowsingArtistContext].push({ id: "alb-" + Date.now(), albumName: title, artist: selectedBrowsingArtistContext, year: year, officialRating: rating, artworkUrl: artwork, tracks: trackArray });
             saveState(); renderArtistReviewPage(selectedBrowsingArtistContext); closeModal('albumModal');
             document.getElementById("newAlbumTitle").value = ""; document.getElementById("newAlbumYear").value = ""; document.getElementById("newAlbumTracksList").value = ""; document.getElementById("newAlbumArtworkUrl").value = ""; temporaryArtworkUrlBuffer = "";
+        }
+
+        // Inline metadata hot updates
+        function updateAlbumInlineMetadata(albumId, field, value) {
+            if (!isViewingOwnProfile) return;
+            const alb = masterStateCache[selectedBrowsingArtistContext].find(a => a.id === albumId);
+            if (alb) {
+                if (field === 'rating') alb.officialRating = parseFloat(value || 0.0);
+                else alb[field] = value;
+                saveState();
+                if (field === 'artworkUrl') {
+                    const img = document.getElementById(`img-cover-${albumId}`);
+                    if(img) img.src = value;
+                }
+            }
+        }
+
+        function updateTrackNameInline(albumId, trackNum, value) {
+            if (!isViewingOwnProfile) return;
+            const alb = masterStateCache[selectedBrowsingArtistContext].find(a => a.id === albumId);
+            if (alb) {
+                const trk = alb.tracks.find(t => t.num == trackNum);
+                if (trk) { trk.title = value; saveState(); }
+            }
         }
 
         function updateSongScore(artist, albumId, trackNum, value) {
@@ -441,18 +470,31 @@
             if (alb) {
                 const trk = alb.tracks.find(t => t.num == trackNum); if (trk) trk.rating = numVal;
                 saveState();
-                document.getElementById(`avg-${albumId}`).textContent = (alb.tracks.reduce((s, t) => s + t.rating, 0) / alb.tracks.length).toFixed(4);
-                // Dynamically recolor individual row container border caps synchronously [cite: 1]
-                const targetRowWrap = document.getElementById(`rowwrap-${albumId}-${trackNum}`);
-                if(targetRowWrap) { targetRowWrap.className = `flex items-center justify-between p-2 rounded-lg border transition ${getStyleClassForScore(numVal)}`; }
+                
+                const avgVal = (alb.tracks.reduce((s, t) => s + t.rating, 0) / alb.tracks.length);
+                document.getElementById(`avg-${albumId}`).textContent = avgVal.toFixed(4);
+                
+                // Sync classes for rows and macro-summary boxes instantly
+                document.getElementById(`rowwrap-${albumId}-${trackNum}`).className = `flex items-center justify-between p-2 rounded-lg border transition ${getStyleClassForScore(numVal)}`;
+                document.getElementById(`deckavgwrap-${albumId}`).className = `flex items-center gap-2 border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(avgVal)}`;
             }
         }
 
-        function updateAlbumScore(artist, albumId, value) {
-            if (!isViewingOwnProfile) return;
-            const numVal = parseFloat(value); if (isNaN(numVal) || numVal < 0 || numVal > 5) return;
-            const alb = masterStateCache[artist].find(a => a.id === albumId);
-            if (alb) { alb.officialRating = numVal; saveState(); }
+        // Destruction operational hooks
+        function deleteAlbumFromContext(albumId) {
+            if (!isViewingOwnProfile || !confirm("Are you sure you want to completely delete this album?")) return;
+            masterStateCache[selectedBrowsingArtistContext] = masterStateCache[selectedBrowsingArtistContext].filter(a => a.id !== albumId);
+            saveState();
+            renderArtistReviewPage(selectedBrowsingArtistContext);
+        }
+
+        function deleteEntireArtistContext() {
+            if (!isViewingOwnProfile || !confirm(`⚠️ CRITICAL WARNING: Are you sure you want to entirely delete ${selectedBrowsingArtistContext} and all corresponding records from your profile? This cannot be undone.`)) return;
+            delete masterStateCache[selectedBrowsingArtistContext];
+            selectedBrowsingArtistContext = "";
+            saveState();
+            refreshDropdownListing();
+            revertToOwnProfile();
         }
 
         // --- ARTIST LEVEL CONSOLIDATED ACCUMULATOR ---
@@ -472,7 +514,7 @@
                 } else {
                     card.className = "p-2 rounded-lg border border-gray-900 bg-gray-950/40 text-gray-700 flex flex-col items-center justify-center";
                 }
-                card.innerHTML = `<span class="text-[9px] uppercase tracking-tighter opacity-80">${l.label.substring(0,6)}</span><span class="text-sm font-black mt-0.5">${l.val.toFixed(1)}</span><span class="text-[10px] bg-black/40 px-1.5 py-0.5 rounded mt-1 font-mono text-white">${count}</span>`;
+                card.innerHTML = `<span class="text-[8px] uppercase tracking-tighter opacity-80 text-center truncate w-full">${l.label}</span><span class="text-sm font-black mt-0.5">${l.val.toFixed(1)}</span><span class="text-[10px] bg-black/40 px-1.5 py-0.5 rounded mt-1 font-mono text-white">${count}</span>`;
                 grid.appendChild(card);
             });
         }
@@ -502,28 +544,49 @@
             }
             albums.forEach(album => {
                 const totalTracksCount = album.tracks.length;
+                const trackAvg = album.tracks.reduce((s, t) => s + t.rating, 0) / (totalTracksCount || 1);
                 const section = document.createElement("div");
                 section.className = "bg-gray-950 border border-gray-900 rounded-xl p-6 shadow-2xl space-y-6";
+                
+                // Formulate content container blocks with operational edit capabilities attached
                 section.innerHTML = `
-                    <div class="grid grid-cols-1 lg:grid-cols-12 border-b border-gray-900 pb-4 gap-2 items-center">
-                        <div class="lg:col-span-5 text-xs font-bold text-gray-500 uppercase tracking-widest">Album: <span class="text-white text-base font-black normal-case block mt-0.5">${album.albumName}</span></div>
-                        <div class="lg:col-span-3 text-xs font-bold text-gray-500 uppercase tracking-widest">Year: <span class="text-gray-300 text-base font-mono font-bold block mt-0.5">[${album.year}]</span></div>
-                        <div class="lg:col-span-4 text-right text-xs font-black tracking-widest">${isViewingOwnProfile ? '<span class="text-green-400 bg-green-500/10 px-2 py-1 rounded border border-green-500/20 text-[10px]">🟢 ACCESS GRANTED</span>' : '<span class="text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20 text-[10px]">🔒 READ ONLY</span>'}</div>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 border-b border-gray-900 pb-4 gap-4 items-center">
+                        <div class="lg:col-span-5 flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Album Title Name</span>
+                            ${isViewingOwnProfile ? `
+                                <input type="text" value="${album.albumName}" onchange="updateAlbumInlineMetadata('${album.id}', 'albumName', this.value)" class="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-sm text-white font-black w-full focus:outline-none focus:border-purple-500">
+                            ` : `<span class="text-white text-base font-black">${album.albumName}</span>`}
+                        </div>
+                        <div class="lg:col-span-3 flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Release Year</span>
+                            ${isViewingOwnProfile ? `
+                                <input type="number" value="${album.year}" onchange="updateAlbumInlineMetadata('${album.id}', 'year', this.value)" class="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-sm font-mono text-gray-300 font-bold w-full focus:outline-none focus:border-purple-500">
+                            ` : `<span class="text-gray-300 text-sm font-mono">[${album.year}]</span>`}
+                        </div>
+                        <div class="lg:col-span-4 flex items-center justify-end gap-3 pt-4 lg:pt-0">
+                            ${isViewingOwnProfile ? `
+                                <button onclick="deleteAlbumFromContext('${album.id}')" class="bg-red-950/40 border border-red-900/60 text-red-400 hover:bg-red-900 hover:text-white px-2.5 py-1 rounded text-xs font-bold transition">🗑️ Delete Album</button>
+                            ` : ''}
+                            <span class="text-[10px] uppercase font-black tracking-widest px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded">ARCHIVE ID</span>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                         <div class="md:col-span-7 space-y-2">
                             <div class="flex items-center justify-between border-b border-gray-900 pb-1 text-[10px] uppercase tracking-wider font-black text-gray-500">
                                 <div class="flex gap-4"><span>#</span><span>Track Title</span></div>
                                 <span class="pr-6">Rating Score</span>
                             </div>
-                            <div class="space-y-1.5 max-h-[450px] overflow-y-auto pr-1 custom-scrollbar">
+                            <div class="space-y-1.5">
                                 ${album.tracks.map(t => `
                                     <div id="rowwrap-${album.id}-${t.num}" class="flex items-center justify-between p-2 rounded-lg border transition ${getStyleClassForScore(t.rating)}">
-                                        <div class="flex items-center gap-3 truncate">
+                                        <div class="flex items-center gap-3 truncate flex-grow mr-2">
                                             <span class="font-mono text-xs opacity-60 w-4">${t.num}</span>
-                                            <span class="font-semibold text-xs tracking-wide truncate text-white-important">${t.title}</span>
+                                            ${isViewingOwnProfile ? `
+                                                <input type="text" value="${t.title}" onchange="updateTrackNameInline('${album.id}', ${t.num}, this.value)" class="bg-transparent border-b border-transparent hover:border-white/10 focus:border-white focus:outline-none text-xs font-medium tracking-wide text-white flex-grow py-0.5">
+                                            ` : `<span class="font-semibold text-xs tracking-wide truncate text-white-important">${t.title}</span>`}
                                         </div>
-                                        <div class="flex items-center">
+                                        <div class="flex items-center flex-shrink-0">
                                             ${isViewingOwnProfile ? `
                                                 <input type="number" step="0.5" min="0" max="5" value="${t.rating}" oninput="updateSongScore('${artistName}', '${album.id}', ${t.num}, this.value)" class="w-14 bg-black/40 border border-white/10 rounded font-mono text-center text-xs px-1 py-0.5 font-bold focus:outline-none focus:border-white">
                                             ` : `
@@ -533,22 +596,33 @@
                                     </div>
                                 `).join('')}
                             </div>
-                            <div class="grid grid-cols-2 border-t border-gray-900 pt-4 bg-gray-900/10 px-4 py-3 rounded-lg">
-                                <div class="flex items-center gap-2"><span class="text-[10px] uppercase font-black text-gray-500 tracking-wider">TRACK AVG:</span><span class="text-sm font-mono font-bold text-blue-400" id="avg-${album.id}">${(album.tracks.reduce((s, t) => s + t.rating, 0) / totalTracksCount).toFixed(4)}</span></div>
-                                <div class="flex items-center justify-end gap-2"><span class="text-[10px] uppercase font-black text-gray-500 tracking-wider">OVERALL:</span>
+                            
+                            <div class="grid grid-cols-2 gap-3 border-t border-gray-900 pt-4">
+                                <div id="deckavgwrap-${album.id}" class="flex items-center gap-2 border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(trackAvg)}">
+                                    <span class="text-[9px] uppercase font-black tracking-wider opacity-80">TRACK AVG:</span>
+                                    <span class="text-sm font-mono font-black" id="avg-${album.id}">${trackAvg.toFixed(4)}</span>
+                                </div>
+                                <div id="deckoverallwrap-${album.id}" class="flex items-center justify-between border px-3 py-1.5 rounded-lg transition ${getStyleClassForScore(album.officialRating)}">
+                                    <span class="text-[9px] uppercase font-black tracking-wider opacity-80">OVERALL:</span>
                                     ${isViewingOwnProfile ? `
-                                        <input type="number" step="0.1" min="0" max="5" value="${album.officialRating}" oninput="updateAlbumScore('${artistName}', '${album.id}', this.value)" class="w-16 bg-gray-900 border border-gray-800 rounded font-mono text-center font-black text-sm text-green-400 px-1.5 focus:outline-none">
+                                        <input type="number" step="0.1" min="0" max="5" value="${album.officialRating}" oninput="updateAlbumInlineMetadata('${album.id}', 'rating', this.value); this.parentElement.className='flex items-center justify-between border px-3 py-1.5 rounded-lg transition ' + getStyleClassForScore(this.value);" class="w-14 bg-black/30 border border-white/10 rounded font-mono text-center font-black text-xs focus:outline-none focus:border-white">
                                     ` : `
-                                        <span class="text-base font-black text-green-400">${album.officialRating.toFixed(1)}</span>
+                                        <span class="text-sm font-mono font-black">${album.officialRating.toFixed(1)}</span>
                                     `}
                                 </div>
                             </div>
                         </div>
-                        <div class="md:col-span-5 flex flex-col items-center justify-center bg-gray-900/20 border border-gray-900 rounded-xl p-4 space-y-3">
-                            <div class="w-full aspect-square rounded-lg overflow-hidden bg-gray-950 border border-gray-800 flex items-center justify-center group shadow-inner">
-                                <img src="${album.artworkUrl || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'}" alt="${album.albumName}" class="w-full h-full object-cover shadow-2xl transition duration-500 hover:scale-105" onerror="this.src='https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'">
+                        
+                        <div class="md:col-span-5 flex flex-col bg-gray-900/20 border border-gray-900 rounded-xl p-4 space-y-3">
+                            <div class="w-full aspect-square rounded-lg overflow-hidden bg-gray-950 border border-gray-800 flex items-center justify-center shadow-inner">
+                                <img id="img-cover-${album.id}" src="${album.artworkUrl || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'}" alt="${album.albumName}" class="w-full h-full object-cover shadow-2xl transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'">
                             </div>
-                            <span class="text-[9px] font-mono tracking-widest text-gray-600 uppercase text-center">Spotify Digital Source Ledger Cover Art</span>
+                            ${isViewingOwnProfile ? `
+                                <div class="flex flex-col gap-1 w-full">
+                                    <span class="text-[8px] font-mono tracking-widest text-gray-500 uppercase">Artwork Asset URL Link</span>
+                                    <input type="text" value="${album.artworkUrl || ''}" placeholder="Paste image link..." onchange="updateAlbumInlineMetadata('${album.id}', 'artworkUrl', this.value)" class="bg-gray-900 border border-gray-850 rounded px-2 py-1 text-[10px] text-gray-400 font-mono focus:outline-none w-full">
+                                </div>
+                            ` : '<span class="text-[9px] font-mono tracking-widest text-gray-600 uppercase text-center">Spotify Digital Source Link</span>'}
                         </div>
                     </div>
                 `;
