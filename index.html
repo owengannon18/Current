@@ -91,7 +91,7 @@
             <div class="space-y-4" id="tierWrapper"></div>
         </div>
 
-        <div id="artist-view" class="app-view space-y-8">
+        <div id="artist-view" class="app-view space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-4">
                 <div class="flex items-center gap-3">
                     <button onclick="showView('profile-view')" class="text-xs font-bold bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-400 hover:text-white">← Home Profile</button>
@@ -99,7 +99,14 @@
                 </div>
                 <button id="addAlbumButtonAction" onclick="openModal('albumModal')" class="hidden bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add New Album Review</button>
             </div>
-            <div id="artistAlbumsContainer" class="space-y-12"></div>
+
+            <div id="artistGlobalSummaryBox" class="bg-gray-900/20 border border-gray-900 rounded-xl p-4">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Global Score Inversion Ledger (Full Discography Distribution)</h4>
+                <div id="artistGlobalHistogramGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-2 font-mono text-[11px]">
+                    </div>
+            </div>
+
+            <div id="artistAlbumsContainer" class="space-y-8"></div>
         </div>
     </div>
 
@@ -108,7 +115,7 @@
             <h3 class="text-lg font-bold text-white">Add New Artist Profile</h3>
             <div>
                 <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Artist Name</label>
-                <input type="text" id="newArtistNameInput" placeholder="e.g., Pink Floyd" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                <input type="text" id="newArtistNameInput" placeholder="e.g., boygenius" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none focus:border-blue-500">
             </div>
             <div class="flex justify-end gap-2 text-xs font-bold">
                 <button onclick="closeModal('artistModal')" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
@@ -142,15 +149,19 @@
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <div class="col-span-2">
                     <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Album Title</label>
-                    <input type="text" id="newAlbumTitle" placeholder="e.g., Wish You Were Here" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none">
+                    <input type="text" id="newAlbumTitle" placeholder="e.g., the record" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Release Year</label>
-                    <input type="number" id="newAlbumYear" placeholder="1975" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none">
+                    <input type="number" id="newAlbumYear" placeholder="2023" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Initial Rating (1-5)</label>
                     <input type="number" step="0.1" id="newAlbumRating" value="3.0" class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Artwork Image Link (Optional)</label>
+                    <input type="text" id="newAlbumArtworkUrl" placeholder="https://..." class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none">
                 </div>
             </div>
             <div>
@@ -165,9 +176,6 @@
     </div>
 
     <script>
-        // ===================================================
-        // 🔑 LIVE DATABASE & SERVICE CONFIGURATION
-        // ===================================================
         const SPOTIFY_CLIENT_ID = "1c90dadc3c4d4f12aad64c6c819964e6"; 
         const SUPABASE_URL = "https://gfifvkckampxgdyhjpjo.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmaWZ2a2NrYW1weGdkeWhqcGpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0OTE3MTMsImV4cCI6MjA5NTA2NzcxM30.wC58glx7ZAls4KxOTQmcwa99Vqh3tZwRikw6Wk6GKbI";
@@ -177,14 +185,19 @@
         let isViewingOwnProfile = true;  
         let currentAuthenticatedUser = null;
         let selectedBrowsingArtistContext = "";
-        
         let masterStateCache = {};
         let communityProfilesList = [];
+        let temporaryArtworkUrlBuffer = "";
 
-        // Updated defaultSeedData to perfectly match your "boygenius - the record" CSV spreadsheet file metrics
+        // Seed values exactly configured to your uploaded boygenius file matching track distributions [cite: 1]
         const defaultSeedData = {
             "boygenius": [{
-                id: "bg-record-2023", albumName: "the record", artist: "boygenius", year: "2023", officialRating: 3.0,
+                id: "bg-record-2023", 
+                albumName: "the record", 
+                artist: "boygenius", 
+                year: "2023", 
+                officialRating: 3.0,
+                artworkUrl: "https://i.scdn.co/image/ab67616d0000b273105a16dfab1ec693ec9f15fb", // boygenius artwork
                 tracks: [
                     { num: 1, title: "Without You Without Them", rating: 3.0 },
                     { num: 2, title: "$20", rating: 4.0 },
@@ -202,12 +215,26 @@
             }]
         };
 
+        // Your custom key rating configurations with corresponding UI background color styles [cite: 1]
         const ratingLabels = [
-            { label: "MASTERPIECE", val: 5.0 }, { label: "AMAZING", val: 4.5 }, { label: "VERY GOOD", val: 4.0 },
-            { label: "GOOD", val: 3.5 }, { label: "PRETTY GOOD", val: 3.0 }, { label: "AVERAGE", val: 2.5 },
-            { label: "OK", val: 2.0 }, { label: "BAD", val: 1.5 }, { label: "VERY BAD", val: 1.0 },
-            { label: "TERRIBLE", val: 0.5 }, { label: "ATROCIOUS", val: 0.0 }
+            { label: "MASTERPIECE", val: 5.0, bg: "bg-emerald-950 border-emerald-500 text-emerald-400" },
+            { label: "AMAZING", val: 4.5, bg: "bg-green-950 border-green-500 text-green-400" },
+            { label: "VERY GOOD", val: 4.0, bg: "bg-teal-950/70 border-teal-600 text-teal-400" },
+            { label: "GOOD", val: 3.5, bg: "bg-cyan-950/60 border-cyan-600 text-cyan-400" },
+            { label: "PRETTY GOOD", val: 3.0, bg: "bg-sky-950/40 border-sky-700 text-sky-400" },
+            { label: "AVERAGE", val: 2.5, bg: "bg-gray-900 border-gray-700 text-gray-300" },
+            { label: "OK", val: 2.0, bg: "bg-orange-950/40 border-orange-800 text-orange-400" },
+            { label: "BAD", val: 1.5, bg: "bg-amber-950/50 border-amber-900 text-amber-500" },
+            { label: "VERY BAD", val: 1.0, bg: "bg-red-950/40 border-red-900 text-red-400" },
+            { label: "TERRIBLE", val: 0.5, bg: "bg-red-950 border-red-700 text-red-300" },
+            { label: "ATROCIOUS", val: 0.0, bg: "bg-rose-950 font-black border-rose-500 text-rose-400 animate-pulse" }
         ];
+
+        function getStyleClassForScore(score) {
+            const parsed = parseFloat(score);
+            const match = ratingLabels.find(l => parsed >= l.val);
+            return match ? match.bg : "bg-gray-900 border-gray-800 text-gray-400";
+        }
 
         function checkSupabaseConnected() {
             return SUPABASE_URL !== "https://your-project-id.supabase.co" && SUPABASE_KEY !== "your-anon-public-api-key";
@@ -217,9 +244,7 @@
             if (checkSupabaseConnected()) {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 const { data } = await supabaseClient.auth.getSession();
-                if (data?.session) {
-                    currentAuthenticatedUser = data.session.user;
-                }
+                if (data?.session) { currentAuthenticatedUser = data.session.user; }
             }
             await checkSpotifyTokenHook();
             await loadCommunityDirectory();
@@ -229,44 +254,32 @@
         async function loadCommunityDirectory() {
             const select = document.getElementById("communityProfileSelect");
             select.innerHTML = '<option value="">👥 Explore Community Profiles...</option>';
-
             if (supabaseClient) {
                 try {
-                    let { data, error } = await supabaseClient.from('music_profiles').select('user_id, email').order('email');
-                    if (!error && data) {
+                    let { data } = await supabaseClient.from('music_profiles').select('user_id, email').order('email');
+                    if (data) {
                         communityProfilesList = data;
-                        data.forEach(profile => {
-                            const opt = document.createElement("option");
-                            opt.value = profile.user_id;
-                            opt.textContent = profile.email;
-                            select.appendChild(opt);
+                        data.forEach(p => {
+                            const opt = document.createElement("option"); opt.value = p.user_id; opt.textContent = p.email; select.appendChild(opt);
                         });
                     }
-                } catch (e) { console.error("Could not fetch community roster:", e); }
+                } catch (e) { console.error(e); }
             } else {
-                communityProfilesList = [
-                    { user_id: "mock-uid-alice", email: "alice_reviews@test.com", cache: defaultSeedData }
-                ];
+                communityProfilesList = [{ user_id: "mock-uid-alice", email: "alice_reviews@test.com", cache: defaultSeedData }];
                 communityProfilesList.forEach(p => {
-                    const opt = document.createElement("option"); opt.value = p.user_id; opt.textContent = p.email;
-                    select.appendChild(opt);
+                    const opt = document.createElement("option"); opt.value = p.user_id; opt.textContent = p.email; select.appendChild(opt);
                 });
             }
         }
 
         async function handleCommunityProfileSelection(select) {
-            const targetUserId = select.value;
-            if (!targetUserId) {
-                await revertToOwnProfile();
-                return;
-            }
-            await loadProfileDataByUserId(targetUserId);
+            if (!select.value) { await revertToOwnProfile(); return; }
+            await loadProfileDataByUserId(select.value);
         }
 
         async function loadProfileDataByUserId(userId) {
             activeProfileOwnerId = userId;
             isViewingOwnProfile = (currentAuthenticatedUser && currentAuthenticatedUser.id === userId);
-            
             let matchedEmail = "Community Member";
             const targetMeta = communityProfilesList.find(p => p.user_id === userId);
             if (targetMeta) matchedEmail = targetMeta.email;
@@ -274,8 +287,7 @@
             document.getElementById("profileDashboardName").textContent = matchedEmail.split('@')[0] + "'s Archive";
             if (!isViewingOwnProfile) {
                 document.getElementById("profileViewingBadge").classList.remove("hidden");
-                document.getElementById("profileAvatar").className = "w-24 h-24 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full border-2 border-gray-800 flex-shrink-0 shadow-xl";
-                document.getElementById("profileInstructionText").textContent = `You are browsing ${matchedEmail}'s published ledger in Read-Only Mode.`;
+                document.getElementById("profileInstructionText").textContent = `Browsing ${matchedEmail} in Read-Only Mode.`;
             }
 
             if (supabaseClient) {
@@ -295,227 +307,114 @@
         async function revertToOwnProfile() {
             document.getElementById("communityProfileSelect").value = "";
             document.getElementById("profileViewingBadge").classList.add("hidden");
-            document.getElementById("profileAvatar").className = "w-24 h-24 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-full border-2 border-gray-800 flex-shrink-0 shadow-xl";
-            
             if (currentAuthenticatedUser) {
                 await loadProfileDataByUserId(currentAuthenticatedUser.id);
             } else {
-                activeProfileOwnerId = null;
-                isViewingOwnProfile = true;
-                masterStateCache = defaultSeedData;
+                activeProfileOwnerId = null; isViewingOwnProfile = true; masterStateCache = defaultSeedData;
                 document.getElementById("profileDashboardName").textContent = "Music Curator";
                 document.getElementById("profileInstructionText").textContent = "Log in to build an account, auto-import titles from Spotify, and publish your ratings grid online.";
-                selectedBrowsingArtistContext = "";
-                refreshDropdownListing();
-                recalculateMetricsStats();
-                evaluateUIStateContext();
-                showView('profile-view');
+                selectedBrowsingArtistContext = ""; refreshDropdownListing(); recalculateMetricsStats(); evaluateUIStateContext(); showView('profile-view');
             }
         }
 
         async function handleAccountAuth(mode) {
             const email = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPassword").value.trim();
-            if (!email || !password) return alert("Please enter credentials.");
-
+            if (!email || !password) return;
             if (supabaseClient) {
-                let res = null;
-                if (mode === 'signup') {
-                    res = await supabaseClient.auth.signUp({ email, password });
-                    if(res.error) return alert(res.error.message);
-                    
-                    await supabaseClient.from('music_profiles').insert({ user_id: res.data.user.id, email: email, reviews_cache: defaultSeedData });
-                    alert("Registration Complete! Logging session in...");
-                    currentAuthenticatedUser = res.data.user;
-                } else {
-                    res = await supabaseClient.auth.signInWithPassword({ email, password });
-                    if (res.error) return alert(res.error.message);
-                    currentAuthenticatedUser = res.data.user;
-                }
+                let res = (mode === 'signup') ? await supabaseClient.auth.signUp({ email, password }) : await supabaseClient.auth.signInWithPassword({ email, password });
+                if (res.error) return alert(res.error.message);
+                if (mode === 'signup') await supabaseClient.from('music_profiles').insert({ user_id: res.data.user.id, email: email, reviews_cache: defaultSeedData });
+                currentAuthenticatedUser = res.data.user;
             } else {
-                let mockDb = JSON.parse(localStorage.getItem("online_mock_accs") || "{}");
-                if (mode === 'signup') {
-                    if (mockDb[email]) return alert("Email taken locally!");
-                    mockDb[email] = password;
-                    localStorage.setItem("online_mock_accs", JSON.stringify(mockDb));
-                    alert("Sandbox register complete! Click 'Sign In' to confirm.");
-                    return;
-                } else {
-                    if (!mockDb[email] || mockDb[email] !== password) return alert("Invalid simulation password.");
-                    currentAuthenticatedUser = { email: email, id: "sim-uid-" + btoa(email) };
-                }
+                currentAuthenticatedUser = { email: email, id: "sim-uid-" + btoa(email) };
             }
-            document.getElementById("loginEmail").value = "";
-            document.getElementById("loginPassword").value = "";
-            await loadCommunityDirectory();
-            await revertToOwnProfile();
+            await loadCommunityDirectory(); await revertToOwnProfile();
         }
 
-        function handleSignOut() {
-            if (supabaseClient) supabaseClient.auth.signOut();
-            currentAuthenticatedUser = null;
-            revertToOwnProfile();
-        }
+        function handleSignOut() { if (supabaseClient) supabaseClient.auth.signOut(); currentAuthenticatedUser = null; revertToOwnProfile(); }
 
         function evaluateUIStateContext() {
             const canModify = currentAuthenticatedUser && isViewingOwnProfile;
-            if (currentAuthenticatedUser) {
-                document.getElementById("loggedOutState").classList.add("hidden");
-                document.getElementById("loggedInState").classList.remove("hidden");
-                document.getElementById("userEmailBadge").textContent = currentAuthenticatedUser.email;
-            } else {
-                document.getElementById("loggedOutState").classList.remove("hidden");
-                document.getElementById("loggedInState").classList.add("hidden");
-            }
-
-            if (canModify) {
-                document.getElementById("navAddArtistBtn").classList.remove("hidden");
-                document.getElementById("addAlbumButtonAction").classList.remove("hidden");
-            } else {
-                document.getElementById("navAddArtistBtn").classList.add("hidden");
-                document.getElementById("addAlbumButtonAction").classList.add("hidden");
-            }
+            document.getElementById(currentAuthenticatedUser ? "loggedOutState" : "loggedInState").classList.add("hidden");
+            document.getElementById(currentAuthenticatedUser ? "loggedInState" : "loggedOutState").classList.remove("hidden");
+            if (currentAuthenticatedUser) document.getElementById("userEmailBadge").textContent = currentAuthenticatedUser.email;
+            document.getElementById("navAddArtistBtn").className = canModify ? "bg-blue-600 text-white font-bold px-3 py-1 rounded hover:bg-blue-500 transition" : "hidden";
+            document.getElementById("addAlbumButtonAction").className = canModify ? "bg-green-600 hover:bg-green-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition" : "hidden";
         }
 
         async function saveState() {
             if (!isViewingOwnProfile || !currentAuthenticatedUser) return;
-            if (supabaseClient) {
-                await supabaseClient.from('music_profiles').upsert({ user_id: currentAuthenticatedUser.id, email: currentAuthenticatedUser.email, reviews_cache: masterStateCache });
-            }
+            if (supabaseClient) await supabaseClient.from('music_profiles').upsert({ user_id: currentAuthenticatedUser.id, email: currentAuthenticatedUser.email, reviews_cache: masterStateCache });
             recalculateMetricsStats();
+            buildGlobalArtistHistogram(selectedBrowsingArtistContext);
         }
 
-        // ===================================================
-        // 🔒 PKCE SECURE CODE FLOW FOR SPOTIFY WEB API
-        // ===================================================
-        function generateRandomString(length) {
-            const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            const values = crypto.getRandomValues(new Uint8Array(length));
-            return Array.from(values, x => possible[x % possible.length]).join('');
-        }
-
-        async function sha256(plain) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(plain);
-            return crypto.subtle.digest('SHA-256', data);
-        }
-
-        function base64urlencode(a) {
-            return btoa(String.fromCharCode.apply(null, new Uint8Array(a)))
-                .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        }
+        // --- SPOTIFY RADAR PROTOTYPE PROTOCOLS (PKCE CODE FLOW) ---
+        function generateRandomString(l) { let p = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; let v = crypto.getRandomValues(new Uint8Array(l)); return Array.from(v, x => p[x % p.length]).join(''); }
+        async function sha256(plain) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode(plain)); }
+        function base64urlencode(a) { return btoa(String.fromCharCode.apply(null, new Uint8Array(a))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
 
         async function connectSpotify() {
-            if (SPOTIFY_CLIENT_ID === "YOUR_SPOTIFY_CLIENT_ID") {
-                return alert("Setup Action Needed: Please provide a valid client ID.");
-            }
-            const codeVerifier  = generateRandomString(64);
-            const hashed = await sha256(codeVerifier);
-            const codeChallenge = base64urlencode(hashed);
-            
+            const codeVerifier = generateRandomString(64); const hashed = await sha256(codeVerifier); const codeChallenge = base64urlencode(hashed);
             window.localStorage.setItem('spotify_code_verifier', codeVerifier);
-
-            const redirectUri = window.location.origin + window.location.pathname;
-            const args = new URLSearchParams({
-                response_type: 'code',
-                client_id: SPOTIFY_CLIENT_ID,
-                scope: 'user-read-private',
-                redirect_uri: redirectUri,
-                code_challenge_method: 'S256',
-                code_challenge: codeChallenge
-            });
-
+            const args = new URLSearchParams({ response_type: 'code', client_id: SPOTIFY_CLIENT_ID, scope: 'user-read-private', redirect_uri: window.location.origin + window.location.pathname, code_challenge_method: 'S256', code_challenge: codeChallenge });
             window.location.href = 'https://accounts.spotify.com/authorize?' + args;
         }
 
         async function checkSpotifyTokenHook() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-
+            const code = new URLSearchParams(window.location.search).get('code');
             if (code) {
                 const codeVerifier = window.localStorage.getItem('spotify_code_verifier');
-                const redirectUri = window.location.origin + window.location.pathname;
-
                 window.history.replaceState({}, document.title, window.location.pathname);
-
                 try {
-                    const res = await fetch('https://accounts.spotify.com/api/token', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({
-                            client_id: SPOTIFY_CLIENT_ID,
-                            grant_type: 'authorization_code',
-                            code: code,
-                            redirect_uri: redirectUri,
-                            code_verifier: codeVerifier
-                        })
-                    });
-
-                    const data = await res.json();
-                    if (data.access_token) {
-                        window.sessionStorage.setItem('spotify_access_token', data.access_token);
-                    }
-                } catch (err) {
-                    console.error("Token exchange failed:", err);
-                }
+                    const res = await fetch('https://accounts.spotify.com/api/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: SPOTIFY_CLIENT_ID, grant_type: 'authorization_code', code: code, redirect_uri: window.location.origin + window.location.pathname, code_verifier: codeVerifier }) });
+                    const data = await res.json(); if (data.access_token) window.sessionStorage.setItem('spotify_access_token', data.access_token);
+                } catch (e) { console.error(e); }
             }
-
             if (window.sessionStorage.getItem('spotify_access_token')) {
-                document.getElementById("spotifyConnectBtn").textContent = "✓ Linked";
-                document.getElementById("spotifyConnectBtn").className = "bg-green-950 text-green-400 border border-green-900 px-2 py-0.5 rounded text-[10px] font-bold";
-                document.getElementById("spotifySearchContainer").classList.remove("hidden");
+                document.getElementById("spotifyConnectBtn").textContent = "✓ Linked"; document.getElementById("spotifySearchContainer").classList.remove("hidden");
             }
         }
 
         async function searchSpotifyAlbum() {
-            const query = document.getElementById("spotifySearchInput").value.trim();
-            const token = window.sessionStorage.getItem('spotify_access_token');
-            const resultsBox = document.getElementById("spotifyResults");
-            if (!query || !token) return;
-
-            resultsBox.innerHTML = `<div class="p-2 text-gray-500 italic text-center text-[11px]">Searching...</div>`;
+            const query = document.getElementById("spotifySearchInput").value.trim(); const token = window.sessionStorage.getItem('spotify_access_token');
+            const box = document.getElementById("spotifyResults"); if (!query || !token) return;
+            box.innerHTML = `<div class="p-2 text-gray-500 text-center italic">Searching Spotify...</div>`;
             try {
-                const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=album&limit=4`, { 
-                    headers: { 'Authorization': `Bearer ${token}` } 
-                });
-                if (res.status === 401) { window.sessionStorage.removeItem('spotify_access_token'); return connectSpotify(); }
-                const data = await res.json();
-                resultsBox.innerHTML = "";
+                const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=album&limit=4`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json(); box.innerHTML = "";
                 data.albums.items.forEach(album => {
-                    const row = document.createElement("div");
-                    row.className = "flex items-center gap-3 p-1.5 hover:bg-gray-900 cursor-pointer transition text-left";
-                    row.onclick = () => autofillFromSpotifyId(album.id);
-                    row.innerHTML = `<div class="truncate flex-grow"><span class="block text-white font-bold truncate">${album.name}</span><span class="block text-[10px] text-gray-500 truncate">${album.artists[0].name}</span></div><span class="text-[10px] text-green-500 font-bold px-1.5 bg-green-500/10 rounded">Import</span>`;
-                    resultsBox.appendChild(row);
+                    const r = document.createElement("div"); r.className = "flex items-center gap-3 p-1.5 hover:bg-gray-900 cursor-pointer text-left";
+                    r.onclick = () => autofillFromSpotifyId(album.id);
+                    r.innerHTML = `<div class="truncate flex-grow"><span class="block text-white font-bold truncate">${album.name}</span><span class="block text-[10px] text-gray-500 truncate">${album.artists[0].name}</span></div><span class="text-[10px] text-green-500 font-bold px-1.5 bg-green-500/10 rounded">Select</span>`;
+                    box.appendChild(r);
                 });
-            } catch (err) { resultsBox.innerHTML = `<div class="p-2 text-red-400 text-center text-[10px]">Error loading API.</div>`; }
+            } catch (err) { box.innerHTML = `<div class="p-2 text-red-400 text-center text-[10px]">Failed loading results.</div>`; }
         }
 
         async function autofillFromSpotifyId(id) {
             const token = window.sessionStorage.getItem('spotify_access_token');
             try {
-                const res = await fetch(`https://api.spotify.com/v1/albums/${id}`, { 
-                    headers: { 'Authorization': `Bearer ${token}` } 
-                });
+                const res = await fetch(`https://api.spotify.com/v1/albums/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const album = await res.json();
                 document.getElementById("newAlbumTitle").value = album.name;
                 document.getElementById("newAlbumYear").value = album.release_date ? album.release_date.split('-')[0] : '';
-                if (album.tracks) {
-                    document.getElementById("newAlbumTracksList").value = album.tracks.items.map(t => t.name).join('\n');
+                if(album.images && album.images.length > 0) {
+                    temporaryArtworkUrlBuffer = album.images[0].url;
+                    document.getElementById("newAlbumArtworkUrl").value = temporaryArtworkUrlBuffer;
                 }
-                document.getElementById("spotifyResults").innerHTML = `<div class="p-1 text-green-400 text-center font-bold">✓ Complete tracklist loaded!</div>`;
-            } catch (err) { alert("Autofill error: " + err.message); }
+                if (album.tracks) document.getElementById("newAlbumTracksList").value = album.tracks.items.map(t => t.name).join('\n');
+                document.getElementById("spotifyResults").innerHTML = `<div class="p-1 text-green-400 text-center font-bold">✓ Spotify Meta Ingested!</div>`;
+            } catch (err) { alert(err.message); }
         }
 
         // --- SUBMIT OPERATIONS ---
         function submitNewArtist() {
-            const name = document.getElementById("newArtistNameInput").value.trim();
-            if (!name || !isViewingOwnProfile) return;
+            const name = document.getElementById("newArtistNameInput").value.trim(); if (!name || !isViewingOwnProfile) return;
             if (!masterStateCache[name]) { masterStateCache[name] = []; saveState(); refreshDropdownListing(); }
-            closeModal('artistModal');
-            document.getElementById("newArtistNameInput").value = "";
-            document.getElementById("globalArtistSelect").value = name;
-            handleDropdownSelection(document.getElementById("globalArtistSelect"));
+            closeModal('artistModal'); document.getElementById("newArtistNameInput").value = "";
+            document.getElementById("globalArtistSelect").value = name; handleDropdownSelection(document.getElementById("globalArtistSelect"));
         }
 
         function submitNewAlbum() {
@@ -523,17 +422,16 @@
             const title = document.getElementById("newAlbumTitle").value.trim();
             const year = document.getElementById("newAlbumYear").value.trim();
             const rating = parseFloat(document.getElementById("newAlbumRating").value || 3.0);
+            const artwork = document.getElementById("newAlbumArtworkUrl").value.trim() || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop";
             const tracksText = document.getElementById("newAlbumTracksList").value.split('\n');
-            if (!title || !year) return alert("Title and year required.");
+            if (!title || !year) return alert("Required fields missing.");
 
             const trackArray = []; let idx = 1;
             tracksText.forEach(t => { if(t.trim()) { trackArray.push({ num: idx++, title: t.trim(), rating: 3.0 }); } });
 
-            masterStateCache[selectedBrowsingArtistContext].push({ id: "alb-" + Date.now(), albumName: title, artist: selectedBrowsingArtistContext, year: year, officialRating: rating, tracks: trackArray });
-            saveState();
-            renderArtistReviewPage(selectedBrowsingArtistContext);
-            closeModal('albumModal');
-            document.getElementById("newAlbumTitle").value = ""; document.getElementById("newAlbumYear").value = ""; document.getElementById("newAlbumTracksList").value = "";
+            masterStateCache[selectedBrowsingArtistContext].push({ id: "alb-" + Date.now(), albumName: title, artist: selectedBrowsingArtistContext, year: year, officialRating: rating, artworkUrl: artwork, tracks: trackArray });
+            saveState(); renderArtistReviewPage(selectedBrowsingArtistContext); closeModal('albumModal');
+            document.getElementById("newAlbumTitle").value = ""; document.getElementById("newAlbumYear").value = ""; document.getElementById("newAlbumTracksList").value = ""; document.getElementById("newAlbumArtworkUrl").value = ""; temporaryArtworkUrlBuffer = "";
         }
 
         function updateSongScore(artist, albumId, trackNum, value) {
@@ -541,11 +439,12 @@
             const numVal = parseFloat(value); if (isNaN(numVal) || numVal < 0 || numVal > 5) return;
             const alb = masterStateCache[artist].find(a => a.id === albumId);
             if (alb) {
-                const trk = alb.tracks.find(t => t.num == trackNum);
-                if (trk) trk.rating = numVal;
+                const trk = alb.tracks.find(t => t.num == trackNum); if (trk) trk.rating = numVal;
                 saveState();
-                document.getElementById(`avg-${albumId}`).textContent = (alb.tracks.reduce((s, t) => s + t.rating, 0) / alb.tracks.length).toFixed(9);
-                rebuildTotalsHistogram(alb, albumId);
+                document.getElementById(`avg-${albumId}`).textContent = (alb.tracks.reduce((s, t) => s + t.rating, 0) / alb.tracks.length).toFixed(4);
+                // Dynamically recolor individual row container border caps synchronously [cite: 1]
+                const targetRowWrap = document.getElementById(`rowwrap-${albumId}-${trackNum}`);
+                if(targetRowWrap) { targetRowWrap.className = `flex items-center justify-between p-2 rounded-lg border transition ${getStyleClassForScore(numVal)}`; }
             }
         }
 
@@ -556,48 +455,50 @@
             if (alb) { alb.officialRating = numVal; saveState(); }
         }
 
+        // --- ARTIST LEVEL CONSOLIDATED ACCUMULATOR ---
+        function buildGlobalArtistHistogram(artistName) {
+            const grid = document.getElementById("artistGlobalHistogramGrid"); if(!grid) return;
+            grid.innerHTML = "";
+            const albums = masterStateCache[artistName] || [];
+            const globalTally = {}; ratingLabels.forEach(l => globalTally[l.val] = 0);
+            
+            albums.forEach(alb => { alb.tracks.forEach(t => { if(globalTally[t.rating] !== undefined) globalTally[t.rating]++; }); });
+
+            ratingLabels.forEach(l => {
+                const count = globalTally[l.val] || 0;
+                const card = document.createElement("div");
+                if (count > 0) {
+                    card.className = `p-2 rounded-lg border flex flex-col items-center justify-center font-bold ${l.bg}`;
+                } else {
+                    card.className = "p-2 rounded-lg border border-gray-900 bg-gray-950/40 text-gray-700 flex flex-col items-center justify-center";
+                }
+                card.innerHTML = `<span class="text-[9px] uppercase tracking-tighter opacity-80">${l.label.substring(0,6)}</span><span class="text-sm font-black mt-0.5">${l.val.toFixed(1)}</span><span class="text-[10px] bg-black/40 px-1.5 py-0.5 rounded mt-1 font-mono text-white">${count}</span>`;
+                grid.appendChild(card);
+            });
+        }
+
         function handleDropdownSelection(select) {
             selectedBrowsingArtistContext = select.value;
             if (selectedBrowsingArtistContext) { renderArtistReviewPage(selectedBrowsingArtistContext); showView('artist-view'); }
         }
 
         function refreshDropdownListing() {
-            const select = document.getElementById("globalArtistSelect");
-            select.innerHTML = '<option value="">🔍 Select an Artist...</option>';
+            const select = document.getElementById("globalArtistSelect"); select.innerHTML = '<option value="">🔍 Select an Artist...</option>';
             Object.keys(masterStateCache).sort().forEach(artist => {
                 const opt = document.createElement("option"); opt.value = artist; opt.textContent = artist; select.appendChild(opt);
             });
             select.value = selectedBrowsingArtistContext;
         }
 
-        function rebuildTotalsHistogram(album, albumId) {
-            const tally = {}; ratingLabels.forEach(l => tally[l.val] = 0);
-            album.tracks.forEach(t => { if(tally[t.rating] !== undefined) tally[t.rating]++; });
-            ratingLabels.forEach(l => {
-                const row = document.getElementById(`tally-${albumId}-${l.val.toFixed(1).replace('.','_')}`);
-                if(row) {
-                    const count = tally[l.val] || 0; const badge = row.querySelector('.tally-count');
-                    if(count > 0) {
-                        row.className = "flex justify-between items-center py-0.5 px-1.5 rounded bg-gray-900 text-white font-bold";
-                        badge.className = "tally-count text-green-400 bg-green-500/10 px-2 py-0.5 rounded font-black text-white-important";
-                        badge.textContent = count;
-                    } else {
-                        row.className = "flex justify-between items-center py-0.5 px-1.5 rounded text-gray-600";
-                        badge.className = "tally-count text-gray-800"; badge.textContent = "0";
-                    }
-                }
-            });
-        }
-
         function renderArtistReviewPage(artistName) {
             if(!artistName) return;
             document.getElementById("artistPageHeaderTitle").textContent = `${artistName}`;
+            buildGlobalArtistHistogram(artistName);
             const container = document.getElementById("artistAlbumsContainer"); container.innerHTML = "";
             const albums = masterStateCache[artistName] || [];
             
             if (albums.length === 0) {
-                container.innerHTML = `<p class="text-sm text-gray-500 py-12 text-center">No albums logged for this artist yet.</p>`;
-                return;
+                container.innerHTML = `<p class="text-sm text-gray-500 py-12 text-center">No albums logged for this artist yet.</p>`; return;
             }
             albums.forEach(album => {
                 const totalTracksCount = album.tracks.length;
@@ -607,39 +508,51 @@
                     <div class="grid grid-cols-1 lg:grid-cols-12 border-b border-gray-900 pb-4 gap-2 items-center">
                         <div class="lg:col-span-5 text-xs font-bold text-gray-500 uppercase tracking-widest">Album: <span class="text-white text-base font-black normal-case block mt-0.5">${album.albumName}</span></div>
                         <div class="lg:col-span-3 text-xs font-bold text-gray-500 uppercase tracking-widest">Year: <span class="text-gray-300 text-base font-mono font-bold block mt-0.5">[${album.year}]</span></div>
-                        <div class="lg:col-span-4 text-right text-xs font-black tracking-widest">${isViewingOwnProfile ? '<span class="text-green-400 bg-green-500/10 px-2 py-1 rounded border border-green-500/20">🟢 ACCESS GRANTED</span>' : '<span class="text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">🔒 READ ONLY</span>'}</div>
+                        <div class="lg:col-span-4 text-right text-xs font-black tracking-widest">${isViewingOwnProfile ? '<span class="text-green-400 bg-green-500/10 px-2 py-1 rounded border border-green-500/20 text-[10px]">🟢 ACCESS GRANTED</span>' : '<span class="text-blue-400 bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20 text-[10px]">🔒 READ ONLY</span>'}</div>
                     </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                        <div class="lg:col-span-7 space-y-4">
-                            <table class="w-full border-collapse text-sm">
-                                <thead><tr class="border-b border-gray-800 font-mono text-xs text-gray-500 uppercase tracking-wider text-left"><th class="py-2 w-12">#</th><th>TRACK TITLE</th><th class="py-2 text-right pr-4 w-28">RATING</th></tr></thead>
-                                <tbody class="divide-y divide-gray-900/40 text-gray-300">
-                                    ${album.tracks.map(t => `
-                                        <tr class="hover:bg-gray-900/20 transition">
-                                            <td class="py-2 font-mono text-xs text-gray-600">${t.num}</td>
-                                            <td class="py-2 font-medium text-white">${t.title}</td>
-                                            <td class="py-2 text-right pr-4">
-                                                ${isViewingOwnProfile ? `<input type="number" step="0.5" min="0" max="5" value="${t.rating}" oninput="updateSongScore('${artistName}', '${album.id}', ${t.num}, this.value)" class="w-16 bg-gray-900 border border-gray-800 rounded font-mono text-right text-xs text-green-400 px-1 py-0.5 font-bold focus:outline-none">` : `<span class="font-mono font-bold text-green-400">${t.rating.toFixed(1)}</span>`}
-                                            </td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                        <div class="md:col-span-7 space-y-2">
+                            <div class="flex items-center justify-between border-b border-gray-900 pb-1 text-[10px] uppercase tracking-wider font-black text-gray-500">
+                                <div class="flex gap-4"><span>#</span><span>Track Title</span></div>
+                                <span class="pr-6">Rating Score</span>
+                            </div>
+                            <div class="space-y-1.5 max-h-[450px] overflow-y-auto pr-1 custom-scrollbar">
+                                ${album.tracks.map(t => `
+                                    <div id="rowwrap-${album.id}-${t.num}" class="flex items-center justify-between p-2 rounded-lg border transition ${getStyleClassForScore(t.rating)}">
+                                        <div class="flex items-center gap-3 truncate">
+                                            <span class="font-mono text-xs opacity-60 w-4">${t.num}</span>
+                                            <span class="font-semibold text-xs tracking-wide truncate text-white-important">${t.title}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            ${isViewingOwnProfile ? `
+                                                <input type="number" step="0.5" min="0" max="5" value="${t.rating}" oninput="updateSongScore('${artistName}', '${album.id}', ${t.num}, this.value)" class="w-14 bg-black/40 border border-white/10 rounded font-mono text-center text-xs px-1 py-0.5 font-bold focus:outline-none focus:border-white">
+                                            ` : `
+                                                <span class="font-mono font-black px-2 text-xs">${t.rating.toFixed(1)}</span>
+                                            `}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
                             <div class="grid grid-cols-2 border-t border-gray-900 pt-4 bg-gray-900/10 px-4 py-3 rounded-lg">
-                                <div class="flex items-center gap-2"><span class="text-xs font-bold text-gray-500">AVG:</span><span class="text-base font-mono font-bold text-blue-400" id="avg-${album.id}">${(album.tracks.reduce((s, t) => s + t.rating, 0) / totalTracksCount).toFixed(9)}</span></div>
-                                <div class="flex items-center justify-end gap-2"><span class="text-xs font-bold text-gray-500">OVERALL:</span>
-                                    ${isViewingOwnProfile ? `<input type="number" step="0.1" min="0" max="5" value="${album.officialRating}" oninput="updateAlbumScore('${artistName}', '${album.id}', this.value)" class="w-16 bg-gray-900 border border-gray-800 rounded font-mono text-right text-sm text-green-400 px-1.5 focus:outline-none">` : `<span class="text-lg font-black text-green-400">${album.officialRating}</span>`}
+                                <div class="flex items-center gap-2"><span class="text-[10px] uppercase font-black text-gray-500 tracking-wider">TRACK AVG:</span><span class="text-sm font-mono font-bold text-blue-400" id="avg-${album.id}">${(album.tracks.reduce((s, t) => s + t.rating, 0) / totalTracksCount).toFixed(4)}</span></div>
+                                <div class="flex items-center justify-end gap-2"><span class="text-[10px] uppercase font-black text-gray-500 tracking-wider">OVERALL:</span>
+                                    ${isViewingOwnProfile ? `
+                                        <input type="number" step="0.1" min="0" max="5" value="${album.officialRating}" oninput="updateAlbumScore('${artistName}', '${album.id}', this.value)" class="w-16 bg-gray-900 border border-gray-800 rounded font-mono text-center font-black text-sm text-green-400 px-1.5 focus:outline-none">
+                                    ` : `
+                                        <span class="text-base font-black text-green-400">${album.officialRating.toFixed(1)}</span>
+                                    `}
                                 </div>
                             </div>
                         </div>
-                        <div class="lg:col-span-5 bg-gray-900/30 border border-gray-900 rounded-xl p-4">
-                            <div class="space-y-1 font-mono text-xs" id="histogram-box-${album.id}">
-                                ${ratingLabels.map(l => `<div id="tally-${album.id}-${l.val.toFixed(1).replace('.','_')}" class="flex justify-between items-center py-0.5 px-1.5 rounded text-gray-600"><div class="flex items-center gap-3"><span class="w-24 truncate text-left text-[11px] font-sans">${l.label}</span><span class="text-gray-400 font-bold">${l.val.toFixed(1)}</span></div><span class="tally-count text-gray-800">0</span></div>`).join('')}
+                        <div class="md:col-span-5 flex flex-col items-center justify-center bg-gray-900/20 border border-gray-900 rounded-xl p-4 space-y-3">
+                            <div class="w-full aspect-square rounded-lg overflow-hidden bg-gray-950 border border-gray-800 flex items-center justify-center group shadow-inner">
+                                <img src="${album.artworkUrl || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'}" alt="${album.albumName}" class="w-full h-full object-cover shadow-2xl transition duration-500 hover:scale-105" onerror="this.src='https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop'">
                             </div>
+                            <span class="text-[9px] font-mono tracking-widest text-gray-600 uppercase text-center">Spotify Digital Source Ledger Cover Art</span>
                         </div>
                     </div>
                 `;
-                container.appendChild(section); rebuildTotalsHistogram(album, album.id);
+                container.appendChild(section);
             });
         }
 
