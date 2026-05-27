@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
 
+  import LandingPage  from './components/LandingPage.svelte';
   import Nav          from './components/Nav.svelte';
   import ProfileView  from './components/views/ProfileView.svelte';
   import ArtistView   from './components/views/ArtistView.svelte';
@@ -34,8 +35,12 @@
   $: favsVal   = $favorites;
   $: view      = $currentView;
   $: artist    = $selectedArtist;
-  $: canEdit   = $isOwnProfile;
+  // Editing requires being signed in AND viewing your own profile
+  $: canEdit   = !!$currentUser && $isOwnProfile;
   $: albumsForArtist = cacheVal[artist] ?? [];
+
+  // Show landing when: no user and not actively browsing a community profile
+  $: showLanding = !$currentUser && $isOwnProfile;
 
   // Profile display text
   $: profileName = user
@@ -122,30 +127,28 @@
   // ─── Auth handlers ────────────────────────────────────────────────────────
 
   async function handleSignIn(email, password) {
-    try {
-      const u = await db.signIn(email, password);
-      currentUser.set(u);
-      await revertToOwnProfile();
-    } catch (e) { alert(e.message); }
+    const u = await db.signIn(email, password); // throws on error
+    currentUser.set(u);
+    await revertToOwnProfile();
   }
 
   async function handleSignUp(email, password) {
-    try {
-      const localCache = get(cache);
-      const localFavs  = get(favorites);
-      const u = await db.signUp(email, password);
-      currentUser.set(u);
-      await db.insertProfile(u.id, email, localCache, localFavs);
-      const profiles = await db.getCommunityProfiles();
-      community.set(profiles);
-      await revertToOwnProfile();
-    } catch (e) { alert(e.message); }
+    const localCache = get(cache);
+    const localFavs  = get(favorites);
+    const u = await db.signUp(email, password); // throws on error
+    currentUser.set(u);
+    await db.insertProfile(u.id, email, localCache, localFavs);
+    const profiles = await db.getCommunityProfiles();
+    community.set(profiles);
+    await revertToOwnProfile();
   }
 
   async function handleSignOut() {
     await saveState();
     await db.signOut();
     currentUser.set(null);
+    // Return to landing — revertToOwnProfile sets isOwnProfile true which
+    // combined with no user will trigger showLanding
     await revertToOwnProfile();
   }
 
@@ -282,55 +285,63 @@
   }
 </script>
 
-<div class="p-4 md:p-8 min-h-screen">
-  <div class="max-w-6xl mx-auto">
-    <Nav
-      onGoHome={revertToOwnProfile}
-      onSignIn={handleSignIn}
-      onSignUp={handleSignUp}
-      onSignOut={handleSignOut}
-      onAddArtist={() => showArtistModal = true}
-      onSelectArtist={selectArtist}
-      onSelectCommunity={loadCommunityProfile}
-    />
-
-    {#if view === 'profile'}
-      <ProfileView
-        profileName={profileName}
-        subText={profileSub}
-        isViewing={!$isOwnProfile}
-        favs={favsVal}
-        onNavigate={navigateTo}
-        onFavSlot={openFavSlot}
+{#if showLanding}
+  <LandingPage
+    onSignIn={handleSignIn}
+    onSignUp={handleSignUp}
+    onBrowse={loadCommunityProfile}
+  />
+{:else}
+  <div class="p-4 md:p-8 min-h-screen">
+    <div class="max-w-6xl mx-auto">
+      <Nav
+        onGoHome={revertToOwnProfile}
+        onSignIn={handleSignIn}
+        onSignUp={handleSignUp}
+        onSignOut={handleSignOut}
+        onAddArtist={() => showArtistModal = true}
+        onSelectArtist={selectArtist}
+        onSelectCommunity={loadCommunityProfile}
       />
 
-    {:else if view === 'artist'}
-      <ArtistView
-        artistName={artist}
-        albums={albumsForArtist}
-        {canEdit}
-        onBack={() => currentView.set('profile')}
-        onRename={renameArtist}
-        onAddAlbum={() => showAlbumModal = true}
-        onDeleteArtist={deleteArtist}
-        onUpdateTrack={updateTrack}
-        onUpdateAlbum={updateAlbum}
-        onDeleteAlbum={deleteAlbum}
-        onMoveUp={(id) => moveAlbum(id, 'up')}
-        onMoveDown={(id) => moveAlbum(id, 'down')}
-      />
+      {#if view === 'profile'}
+        <ProfileView
+          profileName={profileName}
+          subText={profileSub}
+          isViewing={!$isOwnProfile}
+          favs={favsVal}
+          onNavigate={navigateTo}
+          onFavSlot={openFavSlot}
+        />
 
-    {:else if view === 'yearly'}
-      <YearlyView musicCache={cacheVal} onBack={() => currentView.set('profile')} />
+      {:else if view === 'artist'}
+        <ArtistView
+          artistName={artist}
+          albums={albumsForArtist}
+          {canEdit}
+          onBack={() => currentView.set('profile')}
+          onRename={renameArtist}
+          onAddAlbum={() => showAlbumModal = true}
+          onDeleteArtist={deleteArtist}
+          onUpdateTrack={updateTrack}
+          onUpdateAlbum={updateAlbum}
+          onDeleteAlbum={deleteAlbum}
+          onMoveUp={(id) => moveAlbum(id, 'up')}
+          onMoveDown={(id) => moveAlbum(id, 'down')}
+        />
 
-    {:else if view === 'top100'}
-      <Top100View musicCache={cacheVal} onBack={() => currentView.set('profile')} />
+      {:else if view === 'yearly'}
+        <YearlyView musicCache={cacheVal} onBack={() => currentView.set('profile')} />
 
-    {:else if view === 'tiers'}
-      <TiersView musicCache={cacheVal} onBack={() => currentView.set('profile')} />
-    {/if}
+      {:else if view === 'top100'}
+        <Top100View musicCache={cacheVal} onBack={() => currentView.set('profile')} />
+
+      {:else if view === 'tiers'}
+        <TiersView musicCache={cacheVal} onBack={() => currentView.set('profile')} />
+      {/if}
+    </div>
   </div>
-</div>
+{/if}
 
 {#if showArtistModal}
   <ArtistModal
