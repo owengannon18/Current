@@ -1,4 +1,10 @@
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import { ratingLabels } from './constants.js';
+
+export function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
 
 export function getStyleClass(score) {
   const parsed = parseFloat(score);

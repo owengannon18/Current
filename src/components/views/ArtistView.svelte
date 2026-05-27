@@ -1,6 +1,7 @@
 <script>
   import PieChart from '../PieChart.svelte';
   import AlbumCard from '../AlbumCard.svelte';
+  import Button from '$lib/components/ui/button.svelte';
   import { isOwnProfile } from '$lib/stores/app.js';
 
   export let artistName = '';
@@ -17,12 +18,10 @@
   export let onMoveUp        = (albumId) => {};
   export let onMoveDown      = (albumId) => {};
 
-  let editingName = false;
   let nameInput = artistName;
   $: nameInput = artistName;
 
   function commitRename() {
-    editingName = false;
     if (nameInput && nameInput !== artistName) onRename(nameInput);
   }
 </script>
@@ -31,7 +30,7 @@
   <!-- Header -->
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-900 pb-4">
     <div class="flex items-center gap-3 w-full sm:w-auto">
-      <button onclick={onBack} class="text-xs font-bold bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-400 hover:text-white flex-shrink-0">← Home Profile</button>
+      <Button variant="outline" size="sm" on:click={onBack} class="flex-shrink-0">← Home Profile</Button>
       {#if canEdit}
         <input
           type="text"
@@ -48,8 +47,8 @@
 
     {#if canEdit}
       <div class="flex items-center gap-2 flex-shrink-0">
-        <button onclick={onDeleteArtist} class="bg-red-950 border border-red-800 text-red-400 hover:bg-red-700 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition">⚠️ Delete Artist</button>
-        <button onclick={onAddAlbum}     class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">+ Add New Album</button>
+        <Button variant="destructive" size="sm" on:click={onDeleteArtist}>⚠️ Delete Artist</Button>
+        <Button size="sm" on:click={onAddAlbum}>+ Add New Album</Button>
       </div>
     {/if}
   </div>

@@ -1,9 +1,12 @@
 <script>
   import { getStyleClass, trackAverage } from '$lib/utils.js';
   import { FALLBACK_ARTWORK } from '$lib/constants.js';
+  import Button from '$lib/components/ui/button.svelte';
+  import Input  from '$lib/components/ui/input.svelte';
+  import Label  from '$lib/components/ui/label.svelte';
 
   export let album;
-  export const artistName = undefined; // kept for external reference
+  export const artistName = undefined;
   export let canEdit = false;
   export let index   = 0;
   export let total   = 1;
@@ -20,28 +23,27 @@
 <div class="bg-gray-950 border border-gray-900 rounded-xl p-6 shadow-2xl space-y-6">
   <!-- Header row -->
   <div class="grid grid-cols-1 lg:grid-cols-12 border-b border-gray-900 pb-4 gap-4 items-center">
-    <div class="lg:col-span-5 flex flex-col gap-1">
-      <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Album Title Name</span>
+    <div class="lg:col-span-5 flex flex-col gap-1.5">
+      <Label>Album Title Name</Label>
       {#if canEdit}
-        <input
-          type="text"
+        <Input
           value={album.albumName}
-          onchange={(e) => onUpdateAlbum(album.id, 'albumName', e.target.value)}
-          class="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-sm text-white font-black w-full focus:outline-none focus:border-purple-500"
+          on:change={(e) => onUpdateAlbum(album.id, 'albumName', e.target.value)}
+          class="font-black"
         />
       {:else}
         <span class="text-white text-base font-black">{album.albumName}</span>
       {/if}
     </div>
 
-    <div class="lg:col-span-3 flex flex-col gap-1">
-      <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Release Year</span>
+    <div class="lg:col-span-3 flex flex-col gap-1.5">
+      <Label>Release Year</Label>
       {#if canEdit}
-        <input
+        <Input
           type="number"
           value={album.year}
-          onchange={(e) => onUpdateAlbum(album.id, 'year', e.target.value)}
-          class="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-sm font-mono text-gray-300 font-bold w-full focus:outline-none focus:border-purple-500"
+          on:change={(e) => onUpdateAlbum(album.id, 'year', e.target.value)}
+          class="font-mono font-bold"
         />
       {:else}
         <span class="text-gray-300 text-sm font-mono">[{album.year}]</span>
@@ -51,23 +53,26 @@
     {#if canEdit}
       <div class="lg:col-span-4 flex items-center justify-end gap-2">
         <div class="flex items-center gap-1 mr-2 bg-gray-900 border border-gray-800 p-1 rounded-lg">
-          <button
-            onclick={() => onMoveUp(album.id)}
+          <Button
+            variant="secondary"
+            size="sm"
+            on:click={() => onMoveUp(album.id)}
             disabled={index === 0}
-            class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-1 rounded text-xs transition px-2 disabled:opacity-30"
+            class="px-2 py-1 text-xs"
             title="Move Up"
-          >🔼</button>
-          <button
-            onclick={() => onMoveDown(album.id)}
+          >🔼</Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            on:click={() => onMoveDown(album.id)}
             disabled={index === total - 1}
-            class="bg-gray-800 hover:bg-gray-700 text-white font-bold p-1 rounded text-xs transition px-2 disabled:opacity-30"
+            class="px-2 py-1 text-xs"
             title="Move Down"
-          >🔽</button>
+          >🔽</Button>
         </div>
-        <button
-          onclick={() => onDelete(album.id)}
-          class="bg-red-950 border border-red-900 text-red-400 hover:bg-red-600 hover:text-white px-2.5 py-1 rounded text-xs font-bold transition"
-        >🗑️ Delete</button>
+        <Button variant="destructive" size="sm" on:click={() => onDelete(album.id)}>
+          🗑️ Delete
+        </Button>
       </div>
     {/if}
   </div>
@@ -149,14 +154,13 @@
         />
       </div>
       {#if canEdit}
-        <div class="flex flex-col gap-1 w-full">
-          <span class="text-[8px] font-mono tracking-widest text-gray-500 uppercase">Artwork Asset URL</span>
-          <input
-            type="text"
+        <div class="flex flex-col gap-1.5 w-full">
+          <Label>Artwork Asset URL</Label>
+          <Input
             value={album.artworkUrl || ''}
             placeholder="Paste image link..."
-            onchange={(e) => onUpdateAlbum(album.id, 'artworkUrl', e.target.value)}
-            class="bg-gray-900 border border-gray-800 rounded px-2 py-1 text-[10px] text-gray-400 font-mono focus:outline-none w-full"
+            on:change={(e) => onUpdateAlbum(album.id, 'artworkUrl', e.target.value)}
+            class="text-[10px] font-mono"
           />
         </div>
       {/if}

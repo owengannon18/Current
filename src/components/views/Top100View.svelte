@@ -1,6 +1,7 @@
 <script>
   import { getStyleClass } from '$lib/utils.js';
   import { FALLBACK_ARTWORK } from '$lib/constants.js';
+  import Button from '$lib/components/ui/button.svelte';
 
   export let musicCache = {};
   export let onBack = () => {};
@@ -16,7 +17,7 @@
 
 <div class="space-y-6">
   <div class="flex items-center gap-3 mb-6">
-    <button onclick={onBack} class="text-xs font-bold bg-gray-900 border border-gray-800 px-3 py-1.5 rounded text-gray-400 hover:text-white">← Back</button>
+    <Button variant="outline" size="sm" on:click={onBack}>← Back</Button>
     <h2 class="text-xl font-bold text-white">All-Time Rankings</h2>
   </div>
 

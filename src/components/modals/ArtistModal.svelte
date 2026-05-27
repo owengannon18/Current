@@ -1,8 +1,14 @@
 <script>
+  import Dialog from '$lib/components/ui/dialog.svelte';
+  import Button from '$lib/components/ui/button.svelte';
+  import Input  from '$lib/components/ui/input.svelte';
+  import Label  from '$lib/components/ui/label.svelte';
+
   export let onSave  = (name) => {};
   export let onClose = () => {};
 
   let name = '';
+  let open = true;
 
   function submit() {
     if (!name.trim()) return;
@@ -12,26 +18,28 @@
 
   function handleKey(e) {
     if (e.key === 'Enter') submit();
-    if (e.key === 'Escape') onClose();
+  }
+
+  function handleOpenChange(v) {
+    if (!v) onClose();
   }
 </script>
 
-<div role="dialog" aria-modal="true" tabindex="-1" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90" onkeydown={handleKey}>
-  <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-    <h3 class="text-lg font-bold text-white">Add New Artist Profile</h3>
-    <div>
-      <label for="artist-name-input" class="block text-xs font-bold uppercase text-gray-500 mb-1">Artist Name</label>
-      <input
+<Dialog {open} onOpenChange={handleOpenChange}>
+  <h3 class="text-lg font-bold text-white mb-4">Add New Artist Profile</h3>
+  <div class="space-y-4">
+    <div class="space-y-1.5">
+      <Label for_="artist-name-input">Artist Name</Label>
+      <Input
         id="artist-name-input"
-        type="text"
         bind:value={name}
         placeholder="e.g., boygenius"
-        class="w-full bg-gray-950 border border-gray-800 rounded p-2 text-sm text-white focus:outline-none focus:border-purple-500"
+        on:keydown={handleKey}
       />
     </div>
-    <div class="flex justify-end gap-2 text-xs font-bold">
-      <button onclick={onClose}  class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
-      <button onclick={submit}   class="bg-purple-600 px-4 py-2 rounded text-white hover:bg-purple-500">Save Artist</button>
+    <div class="flex justify-end gap-2">
+      <Button variant="ghost" size="sm" on:click={onClose}>Cancel</Button>
+      <Button size="sm" on:click={submit}>Save Artist</Button>
     </div>
   </div>
-</div>
+</Dialog>

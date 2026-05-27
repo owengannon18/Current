@@ -1,6 +1,8 @@
 <script>
   import { profileStats, isOwnProfile } from '$lib/stores/app.js';
   import FavoritesGrid from '../FavoritesGrid.svelte';
+  import Button from '$lib/components/ui/button.svelte';
+  import Badge  from '$lib/components/ui/badge.svelte';
 
   export let profileName  = 'Music Curator';
   export let subText      = '';
@@ -20,14 +22,14 @@
       <div class="flex flex-col sm:flex-row items-center gap-2 justify-center md:justify-start">
         <h2 class="text-3xl font-black text-white tracking-tight">{profileName}</h2>
         {#if isViewing}
-          <span class="text-[10px] uppercase font-black tracking-widest px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">Viewing Community Member</span>
+          <Badge variant="outline" class="text-blue-400 border-blue-500/20 bg-blue-500/10">Viewing Community Member</Badge>
         {/if}
       </div>
       <p class="text-sm text-gray-500 mt-1">{subText}</p>
       <div class="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
-        <button onclick={() => onNavigate('yearly')}  class="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 text-gray-300 text-xs font-bold px-4 py-2 rounded-md transition">🏆 Yearly Favorites</button>
-        <button onclick={() => onNavigate('top100')}  class="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 text-gray-300 text-xs font-bold px-4 py-2 rounded-md transition">🥇 Top 100 Albums</button>
-        <button onclick={() => onNavigate('tiers')}   class="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 text-gray-300 text-xs font-bold px-4 py-2 rounded-md transition">👑 Artist Tiers</button>
+        <Button variant="outline" size="sm" on:click={() => onNavigate('yearly')}>🏆 Yearly Favorites</Button>
+        <Button variant="outline" size="sm" on:click={() => onNavigate('top100')}>🥇 Top 100 Albums</Button>
+        <Button variant="outline" size="sm" on:click={() => onNavigate('tiers')}>👑 Artist Tiers</Button>
       </div>
     </div>
 
