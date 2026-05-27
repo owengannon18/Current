@@ -78,7 +78,7 @@ npm run dev
 
 ## Deployment (GitHub Pages)
 
-The repo includes a GitHub Actions workflow at `.github/workflows/deploy.yml` that builds and deploys to GitHub Pages on every push to `svelte-migration`.
+The repo includes a GitHub Actions workflow at `.github/workflows/deploy.yml` that builds and deploys to GitHub Pages on every push to `main`.
 
 Before deploying, add your environment variables as **repository secrets** in GitHub:
 - `VITE_SUPABASE_URL`
@@ -94,13 +94,15 @@ Then enable GitHub Pages in your repo settings and point it at the `gh-pages` br
 ```
 src/
 ├── lib/
+│   ├── components/
+│   │   └── ui/             # shadcn-style primitives (Button, Input, Label, Badge, Card, Dialog, …)
 │   ├── services/
 │   │   ├── supabase.js     # Supabase client, auth, and database helpers
 │   │   └── spotify.js      # Spotify PKCE OAuth, search, and album fetch
 │   ├── stores/
 │   │   └── app.js          # Svelte writable stores for all shared state
 │   ├── constants.js        # Rating labels, default seed data
-│   └── utils.js            # Shared helpers (rating → CSS class, etc.)
+│   └── utils.js            # Shared helpers (cn, rating → CSS class, etc.)
 ├── components/
 │   ├── views/              # ProfileView, ArtistView, YearlyView, Top100View, TiersView
 │   ├── modals/             # ArtistModal, AlbumModal, FavoritesPickModal
