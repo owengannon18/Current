@@ -1,4 +1,4 @@
-# MusicBoxd
+# Discogd
 
 A music rating and cataloging web app — like Letterboxd, but for albums and tracks. Built with Svelte + Vite, styled with Tailwind CSS v4, backed by Supabase (auth + database), and integrated with the Spotify API for album autofill.
 
@@ -30,8 +30,8 @@ Deployed as a fully static site on GitHub Pages. No server required.
 ### 2. Clone and install
 
 ```bash
-git clone https://github.com/<your-username>/musicboxd.git
-cd musicboxd
+git clone https://github.com/<your-username>/discogd.git
+cd discogd
 npm install
 ```
 

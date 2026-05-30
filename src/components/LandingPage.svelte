@@ -5,20 +5,42 @@
   import Label     from '$lib/components/ui/label.svelte';
   import Card      from '$lib/components/ui/card.svelte';
   import Separator from '$lib/components/ui/separator.svelte';
+  import { Eye, EyeOff } from 'lucide-svelte';
+  import Logo from './Logo.svelte';
 
-  export let onSignIn    = (email, password) => {};
-  export let onSignUp    = (email, password) => {};
-  export let onBrowse    = (userId) => {};
+  export let onSignIn       = (email, password) => {};
+  export let onSignUp       = (email, password) => {};
+  export let onBrowse       = (userId) => {};
+  export let onResetRequest = (email) => {};
 
-  let mode     = 'signin';
-  let email    = '';
-  let password = '';
-  let loading  = false;
-  let error    = '';
+  let mode         = 'signin'; // 'signin' | 'signup' | 'forgot'
+  let email        = '';
+  let password     = '';
+  let showPassword = false;
+  let loading      = false;
+  let error        = '';
+  let success      = '';
+
+  function setMode(m) { mode = m; error = ''; success = ''; }
 
   async function submit() {
+    error = ''; success = '';
+    if (mode === 'forgot') {
+      if (!email) { error = 'Please enter your email address.'; return; }
+      loading = true;
+      try {
+        await onResetRequest(email);
+        success = 'Check your inbox — we sent you a password reset link.';
+        email = '';
+      } catch (e) {
+        error = e.message;
+      } finally {
+        loading = false;
+      }
+      return;
+    }
     if (!email || !password) { error = 'Please fill in both fields.'; return; }
-    loading = true; error = '';
+    loading = true;
     try {
       if (mode === 'signin') await onSignIn(email, password);
       else await onSignUp(email, password);
@@ -36,21 +58,7 @@
 
   <!-- Nav bar -->
   <header class="flex items-center justify-between px-8 py-5 border-b border-white/5">
-    <div class="flex items-center gap-3">
-      <div class="bg-gradient-to-tr from-purple-600 to-indigo-500 w-8 h-8 rounded-full flex items-center justify-center text-white font-extrabold text-sm">M</div>
-      <span class="text-white font-bold tracking-widest text-sm uppercase">MusicBoxd</span>
-    </div>
-    <div class="flex items-center gap-2">
-      <Button
-        variant="ghost"
-        size="sm"
-        on:click={() => { mode = 'signin'; document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' }); }}
-      >Sign In</Button>
-      <Button
-        size="sm"
-        on:click={() => { mode = 'signup'; document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' }); }}
-      >Sign Up Free</Button>
-    </div>
+    <Logo />
   </header>
 
   <!-- Hero -->
@@ -70,58 +78,122 @@
     <!-- Auth card -->
     <Card id="auth-form" class="w-full max-w-sm p-6 text-left">
 
-      <!-- Mode toggle -->
-      <div class="flex bg-gray-900 rounded-xl p-1 mb-5">
-        <button
-          onclick={() => { mode = 'signin'; error = ''; }}
-          class="flex-1 py-2 text-xs font-bold rounded-lg transition {mode === 'signin' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'}"
-        >Sign In</button>
-        <button
-          onclick={() => { mode = 'signup'; error = ''; }}
-          class="flex-1 py-2 text-xs font-bold rounded-lg transition {mode === 'signup' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'}"
-        >Create Account</button>
-      </div>
-
-      <div class="space-y-3">
-        <div class="space-y-1.5">
-          <Label for_="landing-email">Email</Label>
-          <Input
-            id="landing-email"
-            type="email"
-            bind:value={email}
-            on:keydown={handleKey}
-            placeholder="you@example.com"
-          />
-        </div>
-        <div class="space-y-1.5">
-          <Label for_="landing-password">Password</Label>
-          <Input
-            id="landing-password"
-            type="password"
-            bind:value={password}
-            on:keydown={handleKey}
-            placeholder="••••••••"
-          />
+      {#if mode === 'forgot'}
+        <!-- ── Forgot password ── -->
+        <div class="mb-5">
+          <button onclick={() => setMode('signin')} class="text-gray-500 hover:text-gray-300 text-xs flex items-center gap-1 transition mb-4">
+            ← Back to sign in
+          </button>
+          <h2 class="text-white font-bold text-base">Reset your password</h2>
+          <p class="text-gray-500 text-xs mt-1">Enter your email and we'll send you a reset link.</p>
         </div>
 
-        {#if error}
-          <p class="text-red-400 text-xs font-bold">{error}</p>
-        {/if}
+        <div class="space-y-3">
+          <div class="space-y-1.5">
+            <Label for_="forgot-email">Email</Label>
+            <Input
+              id="forgot-email"
+              type="email"
+              bind:value={email}
+              on:keydown={handleKey}
+              placeholder="you@example.com"
+              disabled={loading}
+            />
+          </div>
 
-        <Button
-          on:click={submit}
-          disabled={loading}
-          class="w-full mt-1"
-        >
-          {loading ? 'Please wait…' : mode === 'signin' ? 'Sign In' : 'Create Account'}
-        </Button>
+          {#if error}
+            <p class="text-red-400 text-xs font-bold">{error}</p>
+          {/if}
+          {#if success}
+            <p class="text-green-400 text-xs font-bold">{success}</p>
+          {/if}
 
-        {#if mode === 'signup'}
-          <p class="text-[10px] text-gray-600 text-center">
-            By signing up you agree to rate at least one album.
-          </p>
-        {/if}
-      </div>
+          <Button on:click={submit} disabled={loading} class="w-full mt-1">
+            {loading ? 'Sending…' : 'Send Reset Link'}
+          </Button>
+        </div>
+
+      {:else}
+        <!-- ── Sign in / Sign up ── -->
+        <div class="flex bg-gray-900 rounded-xl p-1 mb-5">
+          <button
+            onclick={() => setMode('signin')}
+            class="flex-1 py-2 text-xs font-bold rounded-lg transition {mode === 'signin' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'}"
+          >Sign In</button>
+          <button
+            onclick={() => setMode('signup')}
+            class="flex-1 py-2 text-xs font-bold rounded-lg transition {mode === 'signup' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'}"
+          >Create Account</button>
+        </div>
+
+        <div class="space-y-3">
+          <div class="space-y-1.5">
+            <Label for_="landing-email">Email</Label>
+            <Input
+              id="landing-email"
+              type="email"
+              bind:value={email}
+              on:keydown={handleKey}
+              placeholder="you@example.com"
+            />
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <Label for_="landing-password">Password</Label>
+              {#if mode === 'signin'}
+                <button
+                  type="button"
+                  onclick={() => setMode('forgot')}
+                  class="text-[10px] text-gray-500 hover:text-purple-400 transition"
+                >
+                  Forgot password?
+                </button>
+              {/if}
+            </div>
+            <div class="relative">
+              <Input
+                id="landing-password"
+                type={showPassword ? 'text' : 'password'}
+                bind:value={password}
+                on:keydown={handleKey}
+                placeholder="••••••••"
+                class="pr-9"
+              />
+              <button
+                type="button"
+                onclick={() => showPassword = !showPassword}
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition"
+                tabindex="-1"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {#if showPassword}
+                  <EyeOff size={15} />
+                {:else}
+                  <Eye size={15} />
+                {/if}
+              </button>
+            </div>
+          </div>
+
+          {#if error}
+            <p class="text-red-400 text-xs font-bold">{error}</p>
+          {/if}
+
+          <Button
+            on:click={submit}
+            disabled={loading}
+            class="w-full mt-1"
+          >
+            {loading ? 'Please wait…' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+          </Button>
+
+          {#if mode === 'signup'}
+            <p class="text-[10px] text-gray-600 text-center">
+              By signing up you agree to rate at least one album.
+            </p>
+          {/if}
+        </div>
+      {/if}
     </Card>
   </section>
 
@@ -160,7 +232,7 @@
 
   <!-- Footer -->
   <footer class="mt-auto border-t border-white/5 px-8 py-5 flex items-center justify-between text-[11px] text-gray-700">
-    <span>MusicBoxd</span>
+    <span>Discogd</span>
     <span>Built with Svelte · Supabase · Spotify</span>
   </footer>
 

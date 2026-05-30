@@ -16,7 +16,7 @@ export function isConfigured() {
   return !!(supabaseUrl && supabaseKey);
 }
 
-// --- Auth ---
+// ── Auth ──────────────────────────────────────────────────────────────────────
 
 export async function getSession() {
   const c = client();
@@ -46,45 +46,126 @@ export async function signOut() {
   if (c) await c.auth.signOut();
 }
 
-// --- Profiles ---
+export async function resetPassword(email) {
+  const c = client();
+  if (!c) throw new Error('Supabase is not configured.');
+  const redirectTo = window.location.origin + window.location.pathname;
+  const { error } = await c.auth.resetPasswordForEmail(email, { redirectTo });
+  if (error) throw error;
+}
+
+export async function updatePassword(newPassword) {
+  const c = client();
+  if (!c) throw new Error('Supabase is not configured.');
+  const { error } = await c.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}
+
+export function onAuthStateChange(callback) {
+  const c = client();
+  if (!c) return { data: { subscription: { unsubscribe: () => {} } } };
+  return c.auth.onAuthStateChange(callback);
+}
+
+// ── Profiles ──────────────────────────────────────────────────────────────────
 
 export async function getCommunityProfiles() {
   const c = client();
   if (!c) return [];
-  const { data, error } = await c.from('music_profiles').select('user_id, email').order('email');
+  const { data, error } = await c
+    .from('profiles')
+    .select('user_id, email')
+    .order('email');
   if (error) throw error;
   return data ?? [];
 }
 
+/**
+ * Fetch a user's full profile and reconstruct the in-memory data shapes
+ * the app expects: { reviews_cache, favorites_grid }.
+ */
 export async function getProfile(userId) {
   const c = client();
   if (!c) return null;
-  const { data } = await c
-    .from('music_profiles')
-    .select('reviews_cache, favorites_grid')
+
+  // Fetch all albums with their artist name and tracks in one query
+  const { data: albumRows, error: albErr } = await c
+    .from('albums')
+    .select(`
+      id, name, year, artwork_url, official_rating, sort_order,
+      artists ( name ),
+      tracks ( track_number, title, rating )
+    `)
     .eq('user_id', userId)
-    .single();
-  return data ?? null;
+    .order('sort_order');
+
+  if (albErr) throw albErr;
+
+  // Reconstruct { "ArtistName": [ albumObj, ... ] }
+  const reviews_cache = {};
+  for (const alb of albumRows ?? []) {
+    const artistName = alb.artists?.name ?? 'Unknown Artist';
+    if (!reviews_cache[artistName]) reviews_cache[artistName] = [];
+    reviews_cache[artistName].push({
+      id:             alb.id,
+      albumName:      alb.name,
+      artist:         artistName,
+      year:           alb.year,
+      officialRating: alb.official_rating,
+      artworkUrl:     alb.artwork_url,
+      tracks: (alb.tracks ?? [])
+        .sort((a, b) => a.track_number - b.track_number)
+        .map(t => ({ num: t.track_number, title: t.title, rating: t.rating })),
+    });
+  }
+
+  // Fetch the 4 favorites slots
+  const { data: favRows, error: favErr } = await c
+    .from('favorites')
+    .select(`
+      slot_index, album_id,
+      albums ( name, artwork_url, artists ( name ) )
+    `)
+    .eq('user_id', userId)
+    .order('slot_index');
+
+  if (favErr) throw favErr;
+
+  const favorites_grid = [null, null, null, null];
+  for (const fav of favRows ?? []) {
+    if (fav.album_id) {
+      favorites_grid[fav.slot_index] = {
+        id:        fav.album_id,
+        albumName: fav.albums?.name        ?? '',
+        artist:    fav.albums?.artists?.name ?? '',
+        artworkUrl: fav.albums?.artwork_url  ?? '',
+      };
+    }
+  }
+
+  return { reviews_cache, favorites_grid };
 }
 
+/**
+ * Atomically sync the user's full data via the sync_profile_data RPC.
+ * This handles inserts, updates, and deletes across all normalized tables.
+ */
 export async function upsertProfile(userId, email, reviewsCache, favoritesGrid) {
   const c = client();
   if (!c) return;
-  await c.from('music_profiles').upsert({
-    user_id: userId,
-    email,
-    reviews_cache: reviewsCache,
-    favorites_grid: favoritesGrid,
+  const { error } = await c.rpc('sync_profile_data', {
+    p_user_id:   userId,
+    p_email:     email,
+    p_cache:     reviewsCache,
+    p_favorites: favoritesGrid,
   });
+  if (error) throw error;
 }
 
+/**
+ * First-time profile creation — same implementation as upsert since
+ * sync_profile_data handles the ON CONFLICT case gracefully.
+ */
 export async function insertProfile(userId, email, reviewsCache, favoritesGrid) {
-  const c = client();
-  if (!c) return;
-  await c.from('music_profiles').insert({
-    user_id: userId,
-    email,
-    reviews_cache: reviewsCache,
-    favorites_grid: favoritesGrid,
-  });
+  return upsertProfile(userId, email, reviewsCache, favoritesGrid);
 }

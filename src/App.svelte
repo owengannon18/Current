@@ -2,8 +2,9 @@
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
 
-  import LandingPage  from './components/LandingPage.svelte';
-  import Nav          from './components/Nav.svelte';
+  import LandingPage        from './components/LandingPage.svelte';
+  import ResetPasswordView  from './components/ResetPasswordView.svelte';
+  import Nav                from './components/Nav.svelte';
   import ProfileView  from './components/views/ProfileView.svelte';
   import ArtistView   from './components/views/ArtistView.svelte';
   import YearlyView   from './components/views/YearlyView.svelte';
@@ -23,11 +24,12 @@
   import { defaultSeedData, FALLBACK_ARTWORK } from './lib/constants.js';
   import { deepClone } from './lib/utils.js';
 
-  // Modal visibility
-  let showArtistModal = false;
-  let showAlbumModal  = false;
-  let showFavModal    = false;
-  let favSlotIndex    = null;
+  // Modal / overlay visibility
+  let showArtistModal    = false;
+  let showAlbumModal     = false;
+  let showFavModal       = false;
+  let favSlotIndex       = null;
+  let showResetPassword  = false;
 
   // Derived helpers
   $: user      = $currentUser;
@@ -57,6 +59,19 @@
   onMount(async () => {
     await spotify.handleCallback();
 
+    // Listen for PASSWORD_RECOVERY before checking the session, so the
+    // recovery token in the URL hash is consumed and the event fires.
+    const { data: { subscription } } = db.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        showResetPassword = true;
+      } else if (event === 'USER_UPDATED' && showResetPassword) {
+        // Password was successfully updated; reload the normal session.
+        currentUser.set(session?.user ?? null);
+        showResetPassword = false;
+        await revertToOwnProfile();
+      }
+    });
+
     const sessionUser = await db.getSession();
     if (sessionUser) currentUser.set(sessionUser);
 
@@ -66,6 +81,8 @@
     } catch (_) { community.set([]); }
 
     await revertToOwnProfile();
+
+    return () => subscription.unsubscribe();
   });
 
   // ─── Profile loading ──────────────────────────────────────────────────────
@@ -85,9 +102,9 @@
       }
     }
     // Fallback: localStorage → seed data
-    const local = localStorage.getItem('musicboxd_local_cache');
+    const local = localStorage.getItem('discogd_local_cache');
     cache.set(local ? JSON.parse(local) : deepClone(defaultSeedData));
-    const localFavs = localStorage.getItem('musicboxd_local_favorites');
+    const localFavs = localStorage.getItem('discogd_local_favorites');
     favorites.set(localFavs ? JSON.parse(localFavs) : [null, null, null, null]);
   }
 
@@ -116,8 +133,8 @@
     const c   = get(cache);
     const favs = get(favorites);
 
-    localStorage.setItem('musicboxd_local_cache',     JSON.stringify(c));
-    localStorage.setItem('musicboxd_local_favorites', JSON.stringify(favs));
+    localStorage.setItem('discogd_local_cache',     JSON.stringify(c));
+    localStorage.setItem('discogd_local_favorites', JSON.stringify(favs));
 
     if (u && get(isOwnProfile)) {
       await db.upsertProfile(u.id, u.email, c, favs);
@@ -141,6 +158,14 @@
     const profiles = await db.getCommunityProfiles();
     community.set(profiles);
     await revertToOwnProfile();
+  }
+
+  async function handleResetRequest(email) {
+    await db.resetPassword(email); // throws on error
+  }
+
+  async function handleUpdatePassword(newPassword) {
+    await db.updatePassword(newPassword); // throws on error
   }
 
   async function handleSignOut() {
@@ -285,11 +310,17 @@
   }
 </script>
 
-{#if showLanding}
+{#if showResetPassword}
+  <ResetPasswordView
+    onSave={handleUpdatePassword}
+    onCancel={revertToOwnProfile}
+  />
+{:else if showLanding}
   <LandingPage
     onSignIn={handleSignIn}
     onSignUp={handleSignUp}
     onBrowse={loadCommunityProfile}
+    onResetRequest={handleResetRequest}
   />
 {:else}
   <div class="p-4 md:p-8 min-h-screen">
