@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [svelte-migration]
+    branches: [main]
 
 permissions:
   contents: write
